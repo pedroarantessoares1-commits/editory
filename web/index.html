@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>App Transcript</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <section class="loadingOverlay" id="loadingOverlay">
+      <div class="loadingBox">
+        <div class="spinner"></div>
+        <p class="eyebrow">Motor local</p>
+        <h2>Preparando motor de transcricao</h2>
+        <p id="loadingMessage">Iniciando backend local...</p>
+      </div>
+    </section>
+
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Local - CPU/GPU - Privado</p>
+          <h1>App Transcript</h1>
+          <p class="lead">Transcricao e tratamento de audio local, com tarefas e historico separados.</p>
+        </div>
+        <div class="engineCard">
+          <div class="status" id="machineStatus">Verificando maquina...</div>
+          <button id="wakeButton" class="wake" type="button" hidden>Acordar motor</button>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Ferramentas">
+        <button class="tab active" type="button" data-tab="transcription">Transcricao</button>
+        <button class="tab" type="button" data-tab="silence">Remover Silencio</button>
+      </nav>
+
+      <section id="transcriptionPanel" class="toolPanel active">
+        <section class="workspace">
+          <form id="uploadForm" class="panel">
+            <label class="drop" id="dropZone">
+              <input id="fileInput" name="files" type="file" accept="audio/*,video/*,.mkv,.webm,.mov,.mp4,.mp3,.m4a,.wav,.ogg,.opus,.flac" multiple />
+              <span id="fileLabel">Adicionar videos/audios de uma ou varias pastas</span>
+            </label>
+
+            <div class="selectedHeader">
+              <strong>Selecionados para transcrever</strong>
+              <button id="clearSelectedTranscription" class="smallButton" type="button">Limpar selecionados</button>
+            </div>
+            <div id="selectedTranscription" class="selectedFiles"></div>
+
+            <div class="grid">
+              <label>
+                Idioma
+                <select name="language">
+                  <option value="">Detectar automaticamente</option>
+                  <option value="pt">Portugues</option>
+                  <option value="en">Ingles</option>
+                  <option value="es">Espanhol</option>
+                  <option value="fr">Frances</option>
+                </select>
+              </label>
+
+              <label>
+                Precisao
+                <select name="mode">
+                  <option value="balanced">Equilibrada</option>
+                  <option value="accurate">Maxima</option>
+                  <option value="fast">Rapida</option>
+                </select>
+              </label>
+
+              <label>
+                Saida
+                <select name="task">
+                  <option value="transcribe">Mesmo idioma</option>
+                  <option value="translate">Traduzir para ingles</option>
+                </select>
+              </label>
+
+              <label class="check">
+                <input type="checkbox" name="vad_filter" checked />
+                Remover silencio
+              </label>
+            </div>
+
+            <div class="options">
+              <label class="check">
+                <input type="checkbox" name="light_cleanup" checked />
+                Limpeza leve automatica
+              </label>
+              <label class="check">
+                <input type="checkbox" name="deep_noise_cleanup" />
+                Reduzir ruido pesado
+              </label>
+              <label class="check">
+                <input type="checkbox" name="separate_voice" />
+                Separar voz da musica
+              </label>
+            </div>
+
+            <label>
+              Vocabulario ou contexto
+              <textarea name="prompt" rows="3" placeholder="Nomes, termos tecnicos, marcas, contexto do video..."></textarea>
+            </label>
+
+            <button class="primary" type="submit">Transcrever selecionados</button>
+          </form>
+
+          <aside class="stack">
+            <section class="panel">
+              <div class="panelTitle">
+                <h2>Tarefas</h2>
+                <button id="clearTranscriptionTasks" class="smallButton" type="button">Limpar lista</button>
+              </div>
+              <div id="jobs" class="jobs"></div>
+            </section>
+
+            <section class="panel">
+              <h2>Historico</h2>
+              <div id="transcriptionHistory" class="jobs"></div>
+            </section>
+          </aside>
+        </section>
+
+        <section class="panel result">
+          <div class="resultHeader">
+            <div>
+              <h2 id="resultTitle">Resultado</h2>
+              <p id="resultMeta">Nenhuma transcricao selecionada.</p>
+            </div>
+            <button id="copyButton" class="copy" type="button">Copiar tudo</button>
+          </div>
+          <input id="searchBox" class="search" placeholder="Buscar na transcricao" />
+          <div id="transcript" class="transcript"></div>
+        </section>
+      </section>
+
+      <section id="silencePanel" class="toolPanel">
+        <section class="workspace">
+          <form id="silenceForm" class="panel">
+            <label class="drop" id="silenceDropZone">
+              <input id="silenceFileInput" name="files" type="file" accept="audio/*,video/*,.mkv,.webm,.mov,.mp4,.mp3,.m4a,.wav,.ogg,.opus,.flac" multiple />
+              <span id="silenceFileLabel">Adicionar audios/videos para cortar silencio</span>
+            </label>
+
+            <div class="selectedHeader">
+              <strong>Selecionados para remover silencio</strong>
+              <button id="clearSelectedSilence" class="smallButton" type="button">Limpar selecionados</button>
+            </div>
+            <div id="selectedSilence" class="selectedFiles"></div>
+
+            <div class="grid silenceSettings">
+              <label>
+                Estrategia
+                <select name="strategy">
+                  <option value="inteligente">Inteligente</option>
+                  <option value="voz_protegida">Voz Protegida</option>
+                  <option value="volume_agressivo">Volume Agressivo</option>
+                </select>
+              </label>
+              <label>
+                Perfil
+                <select name="profile">
+                  <option value="normal">Normal</option>
+                  <option value="suave">Suave</option>
+                  <option value="agressivo">Agressivo</option>
+                </select>
+              </label>
+              <label class="check">
+                <input type="checkbox" name="preserve_edges" checked />
+                Preservar inicio/fim da fala
+              </label>
+              <label class="check">
+                <input type="checkbox" name="separate_voice" />
+                Separar voz da musica
+              </label>
+            </div>
+
+            <button class="primary" type="submit">Remover silencio</button>
+          </form>
+
+          <aside class="stack">
+            <section class="panel">
+              <div class="panelTitle">
+                <h2>Tarefas</h2>
+                <button id="clearSilenceTasks" class="smallButton" type="button">Limpar lista</button>
+              </div>
+              <div id="silenceTasks" class="jobs"></div>
+            </section>
+
+            <section class="panel">
+              <h2>Historico</h2>
+              <div id="silenceHistory" class="jobs"></div>
+            </section>
+          </aside>
+        </section>
+
+        <section class="panel result">
+          <div class="resultHeader">
+            <div>
+              <h2 id="silenceResultTitle">Audio sem silencio</h2>
+              <p id="silenceResultMeta">Nenhum audio selecionado.</p>
+            </div>
+            <a id="silenceDownload" class="copy" href="#" download hidden>Baixar MP3</a>
+          </div>
+          <div id="silenceResult" class="transcript"></div>
+        </section>
+      </section>
+
+      <section class="playerDock" id="playerDock" hidden>
+        <button id="playButton" class="play" type="button">Play</button>
+        <div class="playerInfo">
+          <strong id="playerTitle">Audio</strong>
+          <div class="seekWrap">
+            <span id="currentTime">00:00</span>
+            <input id="seekBar" type="range" min="0" max="1000" value="0" />
+            <span id="durationTime">00:00</span>
+          </div>
+        </div>
+        <label class="volume">
+          Volume
+          <input id="volumeBar" type="range" min="0" max="1" step="0.01" value="1" />
+        </label>
+        <audio id="audioPlayer" preload="metadata"></audio>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

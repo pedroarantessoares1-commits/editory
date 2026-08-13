@@ -1,0 +1,18 @@
+{
+  "name": "app-transcript",
+  "version": "0.1.0-alpha",
+  "private": true,
+  "description": "Desktop app local para transcricao de videos e audios.",
+  "main": "desktop/main.js",
+  "scripts": {
+    "app": "electron .",
+    "build:launcher": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-launcher.ps1",
+    "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/create-desktop-shortcut.ps1",
+    "release:check": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/release-check.ps1",
+    "check:desktop": "node --check desktop/main.js",
+    "check:web": "node --check web/app.js"
+  },
+  "devDependencies": {
+    "electron": "^43.3.0"
+  }
+}

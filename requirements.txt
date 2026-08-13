@@ -1,0 +1,13 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+faster-whisper==1.1.0
+torch==2.5.1
+torchaudio==2.5.1
+silero-vad==6.2.1
+auditok==0.5.2
+soundfile==0.14.0
+nvidia-cublas-cu12
+nvidia-cuda-runtime-cu12
+demucs
+deepfilternet

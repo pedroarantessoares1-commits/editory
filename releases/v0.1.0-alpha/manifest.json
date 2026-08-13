@@ -1,0 +1,39 @@
+{
+  "app": "App Transcript",
+  "version": "0.1.0-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-13",
+  "git_tag": "v0.1.0-alpha",
+  "status": "baseline-local",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "transcription_engine": "faster-whisper",
+    "silence_engine": "adaptive-volume-with-silero-protection"
+  },
+  "paths": {
+    "portable_executable": "launcher/App Transcript/App Transcript.exe",
+    "desktop_shortcut": "C:/Users/pedro/Desktop/App Transcript.lnk",
+    "local_data": "data/"
+  },
+  "artifacts": [
+    {
+      "name": "App Transcript.exe",
+      "path": "launcher/App Transcript/App Transcript.exe",
+      "size_bytes": 225441792,
+      "sha256": "31A0176B7C1A81CF379E55E109C57A56493A4D4A9E9B0D2475A678FD7DF234DC"
+    }
+  ],
+  "checks": {
+    "python_compile": "passed",
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "api_health": "passed",
+    "manual_desktop_open": "passed"
+  },
+  "known_risks": [
+    "Alpha release: remover silencio ainda precisa calibracao com audio real.",
+    "Design final ainda nao foi feito.",
+    "Executavel portatil depende da pasta local do projeto."
+  ]
+}
