@@ -154,6 +154,7 @@ O projeto usa versionamento semantico:
 
 Arquivos de catalogo:
 
+- `AGENTS.md`: memoria operacional do projeto, incluindo quando criar novas versoes.
 - `CHANGELOG.md`: historico geral.
 - `releases/vX.Y.Z/`: notas e manifesto de cada versao.
 
