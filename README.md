@@ -2,7 +2,7 @@
 
 Aplicativo local e gratuito para transcrever videos e audios usando CPU/GPU da maquina.
 
-Versao atual: `0.1.0-alpha`.
+Versao atual: `0.3.0-alpha`.
 
 ## Recursos
 
@@ -21,6 +21,8 @@ Versao atual: `0.1.0-alpha`.
 - Player de audio sincronizado com os trechos.
 - Clique em um trecho para pular o audio para aquele ponto.
 - Botao "Copiar tudo".
+- Exportacao SRT com timestamps reais para DaVinci Resolve e outros editores.
+- Splash/loading do Editory com identidade visual, progresso, mensagens rotativas e fade final.
 - Carregamento inicial do modelo para evitar carregar a cada video.
 - Fallback automatico para CPU se CUDA/cuBLAS/cuDNN estiver incompleto.
 - Stand-by apos 20 minutos sem uso para liberar memoria.
@@ -72,7 +74,7 @@ npm run shortcut
 
 O atalho abre o app sem mostrar URL ou navegador.
 
-Ao abrir, o app mostra uma tela de loading enquanto prepara o motor de transcricao. Esse carregamento acontece uma vez e o modelo fica reutilizavel para os videos da fila. Se a GPU for detectada mas faltar alguma DLL CUDA, o app troca para CPU automaticamente.
+Ao abrir, o app mostra a splash/loading do Editory enquanto prepara o motor de transcricao. Esse carregamento acontece uma vez e o modelo fica reutilizavel para os videos da fila. Se a GPU for detectada mas faltar alguma DLL CUDA, o app troca para CPU automaticamente.
 
 ## Como rodar no navegador para debug
 
@@ -168,6 +170,6 @@ Fluxo sugerido:
 
 ```powershell
 git add .
-git commit -m "chore: baseline App Transcript v0.1.0-alpha"
-git tag v0.1.0-alpha
+git commit -m "chore: catalog App Transcript v0.3.0-alpha"
+git tag v0.3.0-alpha
 ```

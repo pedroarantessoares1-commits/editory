@@ -3,17 +3,63 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>App Transcript</title>
+    <title>Editory</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <section class="loadingOverlay" id="loadingOverlay">
-      <div class="loadingBox">
-        <div class="spinner"></div>
-        <p class="eyebrow">Motor local</p>
-        <h2>Preparando motor de transcricao</h2>
-        <p id="loadingMessage">Iniciando backend local...</p>
+    <section class="loadingOverlay editory-splash" id="loadingOverlay" aria-label="Carregando Editory">
+      <div class="editory-bg-base"></div>
+      <div class="editory-bg-glow editory-bg-glow--indigo"></div>
+      <div class="editory-bg-glow editory-bg-glow--plum"></div>
+      <div class="editory-bg-grid"></div>
+      <div class="editory-bg-vignette"></div>
+
+      <div class="editory-stage">
+        <div class="editory-stack">
+          <h1 class="sr-only">EDITORY - O território de quem vive da edição.</h1>
+          <img class="editory-brand-lockup" src="/assets/editory-brand.png?v=0.3.0-alpha" alt="Editory. O território de quem vive da edição." />
+
+          <div class="editory-loading-block">
+            <div class="editory-loader-wrap" aria-hidden="true">
+              <svg class="editory-loader" viewBox="0 0 120 120">
+                <defs>
+                  <linearGradient id="editoryArcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#4B139F" />
+                    <stop offset="100%" stop-color="#760EA5" />
+                  </linearGradient>
+                </defs>
+                <circle class="editory-loader__track" cx="60" cy="60" r="52"></circle>
+                <circle
+                  class="editory-loader__arc"
+                  id="editoryLoaderArc"
+                  cx="60"
+                  cy="60"
+                  r="52"
+                  stroke-dasharray="326.73"
+                  stroke-dashoffset="326.73"
+                ></circle>
+              </svg>
+            </div>
+
+            <p class="editory-message" role="status" aria-live="polite">
+              <span class="editory-message__text" id="loadingMessage">Ligando os motores...</span>
+            </p>
+
+            <div class="editory-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="loadingProgress">
+              <div class="editory-progress__fill" id="loadingProgressFill">
+                <span class="editory-progress__shine"></span>
+              </div>
+            </div>
+            <div class="editory-progress__value" id="loadingProgressValue">0%</div>
+          </div>
+        </div>
       </div>
+
+      <footer class="editory-footer">
+        <span>© 2026 EDITORY</span>
+        <span class="editory-footer__sep">•</span>
+        <span>V0.3.0 ALPHA</span>
+      </footer>
     </section>
 
     <main class="shell">
@@ -128,7 +174,10 @@
               <h2 id="resultTitle">Resultado</h2>
               <p id="resultMeta">Nenhuma transcricao selecionada.</p>
             </div>
-            <button id="copyButton" class="copy" type="button">Copiar tudo</button>
+            <div class="resultActions">
+              <button id="srtButton" class="copy" type="button" hidden disabled>Exportar SRT</button>
+              <button id="copyButton" class="copy" type="button">Copiar tudo</button>
+            </div>
           </div>
           <input id="searchBox" class="search" placeholder="Buscar na transcricao" />
           <div id="transcript" class="transcript"></div>

@@ -1,0 +1,40 @@
+{
+  "app": "Editory",
+  "version": "0.2.0-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-13",
+  "git_tag": "v0.2.0-alpha",
+  "status": "frontend-branding",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "silence_engine": "adaptive-volume-with-silero-protection"
+  },
+  "paths": {
+    "portable_executable": "launcher/App Transcript/App Transcript.exe",
+    "desktop_shortcut": "C:/Users/pedro/Desktop/App Transcript.lnk",
+    "local_data": "data/"
+  },
+  "changes": [
+    "Editory splash/loading screen based on the Emergent reference.",
+    "Transparent Editory brand asset cropped from the provided identity sheet.",
+    "Responsive dark gradient background, circular loader, progress bar, rotating messages and fade-out.",
+    "Electron boot screen updated to Editory branding.",
+    "No external preview, analytics, CDN font or Tailwind scripts imported from the reference HTML."
+  ],
+  "checks": {
+    "python_compile": "passed",
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "release_check": "passed",
+    "manual_desktop_open": "pending",
+    "portable_executable_rebuilt": "pending"
+  },
+  "known_risks": [
+    "Cropped brand asset can be replaced by a dedicated official PNG/SVG when available.",
+    "Progress remains visually simulated until detailed backend boot progress exists.",
+    "Existing portable executable and shortcut may keep old packaging metadata until rebuilt."
+  ]
+}

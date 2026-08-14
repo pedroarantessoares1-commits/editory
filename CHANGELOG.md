@@ -4,6 +4,50 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.3.0-alpha] - 2026-08-14
+
+### Adicionado
+
+- Exportacao SRT para transcricoes concluidas usando timestamps reais dos segmentos do Whisper.
+- Botao "Exportar SRT" na area de resultado da transcricao.
+- Suporte a SRT traduzido quando o job foi criado com `task="translate"`, mantendo os timestamps originais.
+- Catalogo de release em `releases/v0.3.0-alpha`.
+
+### Alterado
+
+- Gerador SRT agora corrige arredondamento de milissegundos, ignora trechos vazios e quebra texto em linhas de leitura sem inventar timestamps.
+- Metadata FastAPI e pacote atualizadas para `0.3.0-alpha`.
+
+### Observacoes
+
+- A exportacao usa timestamps por segmento, porque o app ainda nao persiste timestamps por palavra.
+- Nenhuma logica de transcricao, traducao, modelo ou pipeline de audio foi alterada.
+
+## [0.2.0-alpha] - 2026-08-13
+
+### Adicionado
+
+- Splash/loading inicial do Editory baseada na referencia visual do Emergent.
+- Asset de marca recortado da identidade visual enviada, com fundo transparente.
+- Loader circular, barra de progresso, mensagens rotativas, mensagem final "Bora editar." e fade out.
+- Responsividade da splash para mobile, desktop e ultrawide.
+- Suporte a `prefers-reduced-motion` e atributos acessiveis para status/progresso.
+- Tela temporaria do Electron com identidade Editory antes do backend carregar.
+
+### Alterado
+
+- Titulo da janela e metadata FastAPI passam a usar Editory nesta versao.
+- Loading inicial agora acompanha o estado real do motor e usa progresso simulado apenas enquanto nao ha progresso real.
+
+### Corrigido
+
+- Estado de falha do motor agora permanece visivel na splash, evitando loading infinito silencioso.
+
+### Observacoes
+
+- A marca foi gerada a partir da imagem de identidade enviada e pode ser substituida por um PNG/SVG oficial dedicado.
+- O executavel portatil nao foi recriado nesta etapa.
+
 ## [0.1.0-alpha] - 2026-08-13
 
 ### Adicionado

@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import asyncio
+import re
 import uuid
 from pathlib import Path
+from urllib.parse import quote
 
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from app.engine import engine
+from app.exporters import export_srt
 from app.models import Job, JobSettings, JobStatus, SilenceSettings, SilenceTask
 from app.silence import CancelledSilenceTask, remove_silence
 from app.transcriber import CancelledJob, has_cuda, transcribe
@@ -24,7 +27,7 @@ STATIC = ROOT / "web"
 for folder in (UPLOADS, JOBS, SILENCE):
     folder.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="App Transcript", version="0.1.0-alpha")
+app = FastAPI(title="Editory", version="0.3.0-alpha")
 jobs: dict[str, Job] = {}
 silence_tasks: dict[str, SilenceTask] = {}
 lock = asyncio.Lock()
@@ -89,6 +92,13 @@ def save_silence_task(task: SilenceTask) -> None:
         task.model_dump_json(indent=2), encoding="utf-8"
     )
     silence_tasks[task.id] = task
+
+
+def srt_filename(filename: str) -> str:
+    stem = Path(filename).stem.strip() or "legenda"
+    stem = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", stem)
+    stem = stem.rstrip(" .") or "legenda"
+    return f"{stem}.srt"
 
 
 async def run_job(job_id: str, media_path: Path) -> None:
@@ -338,6 +348,29 @@ def get_audio(job_id: str) -> FileResponse:
     if not audio_path.exists():
         raise HTTPException(status_code=404, detail="Audio nao encontrado.")
     return FileResponse(audio_path, media_type="audio/mpeg", filename=audio_path.name)
+
+
+@app.get("/api/jobs/{job_id}/export/srt")
+def export_job_srt(job_id: str) -> Response:
+    job = get_job(job_id)
+    if job.status != JobStatus.done:
+        raise HTTPException(status_code=409, detail="A transcricao ainda nao foi concluida.")
+    if not job.segments:
+        raise HTTPException(status_code=404, detail="Esta transcricao nao possui trechos com timestamps.")
+
+    filename = srt_filename(job.filename)
+    content = export_srt(job.segments)
+    if not content.strip():
+        raise HTTPException(status_code=404, detail="Nao ha texto suficiente para gerar SRT.")
+
+    return Response(
+        content=content.encode("utf-8"),
+        media_type="application/x-subrip; charset=utf-8",
+        headers={
+            "Content-Disposition": f"attachment; filename*=UTF-8''{quote(filename)}",
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 @app.post("/api/silence")

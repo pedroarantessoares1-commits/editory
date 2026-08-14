@@ -1,0 +1,42 @@
+{
+  "app": "Editory",
+  "version": "0.3.0-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-14",
+  "git_tag": "v0.3.0-alpha",
+  "status": "srt-export",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "subtitle_format": "SubRip SRT"
+  },
+  "paths": {
+    "portable_executable": "launcher/App Transcript/App Transcript.exe",
+    "desktop_shortcut": "C:/Users/pedro/Desktop/App Transcript.lnk",
+    "local_data": "data/"
+  },
+  "changes": [
+    "SRT export endpoint for completed transcription jobs.",
+    "Exportar SRT button in the transcription result panel.",
+    "Translated SRT export for jobs created with task=translate.",
+    "UTF-8 SubRip output with real segment timestamps and sequential indexes.",
+    "Readable subtitle line wrapping without artificial timestamp generation."
+  ],
+  "checks": {
+    "python_compile": "passed",
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "release_check": "passed",
+    "manual_short_transcription_srt": "pending",
+    "manual_multiminute_srt": "pending",
+    "manual_translated_srt": "pending",
+    "davinci_resolve_structure": "pending"
+  },
+  "known_risks": [
+    "Word-level timestamps are not persisted yet; SRT cues use real Whisper segment timestamps.",
+    "Long segments are line-wrapped instead of split into new timed cues to avoid invented timestamps.",
+    "DaVinci Resolve import must be manually confirmed with a real exported file."
+  ]
+}

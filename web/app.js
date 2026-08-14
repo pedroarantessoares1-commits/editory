@@ -25,12 +25,17 @@ const silenceDownload = document.querySelector("#silenceDownload");
 const machineStatus = document.querySelector("#machineStatus");
 const loadingOverlay = document.querySelector("#loadingOverlay");
 const loadingMessage = document.querySelector("#loadingMessage");
+const loadingProgress = document.querySelector("#loadingProgress");
+const loadingProgressFill = document.querySelector("#loadingProgressFill");
+const loadingProgressValue = document.querySelector("#loadingProgressValue");
+const editoryLoaderArc = document.querySelector("#editoryLoaderArc");
 const wakeButton = document.querySelector("#wakeButton");
 const transcriptEl = document.querySelector("#transcript");
 const resultTitle = document.querySelector("#resultTitle");
 const resultMeta = document.querySelector("#resultMeta");
 const searchBox = document.querySelector("#searchBox");
 const copyButton = document.querySelector("#copyButton");
+const srtButton = document.querySelector("#srtButton");
 const playerDock = document.querySelector("#playerDock");
 const audioPlayer = document.querySelector("#audioPlayer");
 const playButton = document.querySelector("#playButton");
@@ -48,6 +53,33 @@ let initialEngineReady = false;
 let transcriptionFiles = [];
 let silenceFiles = [];
 let currentPlayerMode = "transcription";
+let loadingPercent = 0;
+let loadingTimer = null;
+let loadingShownAt = 0;
+let loadingCompletionTimer = null;
+let loadingCompleted = false;
+
+const loadingMessagesByProgress = [
+  { min: 0, message: "Ligando os motores..." },
+  { min: 10, message: "Aquecendo a timeline..." },
+  { min: 20, message: "Preparando a timeline..." },
+  { min: 30, message: "Organizando o caos criativo..." },
+  { min: 40, message: "Cortando uns frames..." },
+  { min: 50, message: "Dando play nas ferramentas..." },
+  { min: 60, message: "Ajustando os últimos frames..." },
+  { min: 70, message: "Preparando seu território..." },
+  { min: 80, message: "Quase no render..." },
+  { min: 90, message: "Só mais um frame..." },
+  { min: 100, message: "Bora editar." },
+];
+
+const loadingArcDash = 326.73;
+
+function loadingMessageForProgress(percent) {
+  return loadingMessagesByProgress.reduce((selected, item) => (
+    percent >= item.min ? item : selected
+  ), loadingMessagesByProgress[0]).message;
+}
 
 function clock(seconds, separator = ":") {
   const total = Math.floor(seconds || 0);
@@ -138,6 +170,101 @@ function renderSilenceSelected() {
   renderSelected(silenceFiles, selectedSilenceEl, silenceFileLabel, "Adicionar audios/videos para cortar silencio");
 }
 
+function setLoadingProgress(percent) {
+  loadingPercent = Math.max(0, Math.min(100, Math.round(percent || 0)));
+  if (loadingProgress) loadingProgress.setAttribute("aria-valuenow", String(loadingPercent));
+  if (loadingProgressFill) loadingProgressFill.style.width = `${loadingPercent}%`;
+  if (loadingProgressValue) loadingProgressValue.textContent = `${loadingPercent}%`;
+  if (editoryLoaderArc) {
+    editoryLoaderArc.style.strokeDashoffset = String(loadingArcDash - (loadingArcDash * loadingPercent) / 100);
+  }
+  setLoadingMessage(loadingMessageForProgress(loadingPercent));
+}
+
+function setLoadingMessage(message) {
+  if (!loadingMessage || !message || loadingMessage.textContent === message) return;
+  loadingMessage.classList.add("is-changing");
+  window.setTimeout(() => {
+    loadingMessage.textContent = message;
+    loadingMessage.classList.remove("is-changing");
+  }, 90);
+}
+
+function startLoadingMotion(message) {
+  if (!loadingOverlay) return;
+  loadingCompleted = false;
+  if (!loadingShownAt) loadingShownAt = Date.now();
+  if (loadingCompletionTimer) {
+    window.clearTimeout(loadingCompletionTimer);
+    loadingCompletionTimer = null;
+  }
+  document.body.classList.add("editory-loading-active");
+  loadingOverlay.hidden = false;
+  loadingOverlay.classList.remove("is-fading", "is-complete", "is-error");
+
+  if (loadingTimer) return;
+  setLoadingProgress(Math.max(loadingPercent, 6));
+  if (message && loadingPercent < 10) setLoadingMessage(message);
+  loadingTimer = window.setInterval(() => {
+    if (loadingPercent < 88) {
+      const remaining = 88 - loadingPercent;
+      setLoadingProgress(loadingPercent + Math.max(1, Math.ceil(remaining * 0.12)));
+    }
+  }, 1800);
+}
+
+function stopLoadingMotion() {
+  if (loadingTimer) {
+    window.clearInterval(loadingTimer);
+    loadingTimer = null;
+  }
+}
+
+function completeLoading() {
+  if (!loadingOverlay) return;
+  if (loadingCompleted && loadingOverlay.hidden) return;
+  if (loadingCompletionTimer) return;
+  stopLoadingMotion();
+  if (!loadingShownAt) loadingShownAt = Date.now();
+  document.body.classList.add("editory-loading-active");
+  loadingOverlay.hidden = false;
+  loadingOverlay.classList.remove("is-fading", "is-error");
+  const elapsed = loadingShownAt ? Date.now() - loadingShownAt : 0;
+  const finishDelay = Math.max(0, 1500 - elapsed);
+  loadingCompletionTimer = window.setTimeout(() => {
+    loadingCompletionTimer = null;
+    loadingOverlay.classList.remove("is-error");
+    loadingOverlay.classList.add("is-complete");
+    setLoadingProgress(100);
+    setLoadingMessage("Bora editar.");
+    window.setTimeout(() => {
+      loadingOverlay.classList.add("is-fading");
+      window.setTimeout(() => {
+        loadingOverlay.hidden = true;
+        loadingOverlay.classList.remove("is-fading");
+        document.body.classList.remove("editory-loading-active");
+        loadingShownAt = 0;
+        loadingCompleted = true;
+      }, 650);
+    }, 420);
+  }, finishDelay);
+}
+
+function failLoading(message) {
+  if (!loadingOverlay) return;
+  stopLoadingMotion();
+  if (loadingCompletionTimer) {
+    window.clearTimeout(loadingCompletionTimer);
+    loadingCompletionTimer = null;
+  }
+  document.body.classList.add("editory-loading-active");
+  loadingOverlay.hidden = false;
+  loadingOverlay.classList.remove("is-fading", "is-complete");
+  loadingOverlay.classList.add("is-error");
+  setLoadingProgress(Math.max(loadingPercent, 96));
+  setLoadingMessage(message || "Nao foi possivel preparar o motor.");
+}
+
 async function loadHealth() {
   const res = await fetch("/api/health");
   const data = await res.json();
@@ -161,20 +288,19 @@ function renderEngineStatus(status) {
 
   const loading = status.status === "loading";
   if (!initialEngineReady || loading) {
-    loadingOverlay.hidden = false;
-    loadingMessage.textContent = status.message || "Carregando modelo...";
+    startLoadingMotion(status.message || "Carregando modelo...");
   }
 
   if (status.status === "ready") {
     initialEngineReady = true;
-    loadingOverlay.hidden = true;
+    completeLoading();
     setTranscriptionDisabled(false);
     return;
   }
 
   if (status.status === "standby") {
     initialEngineReady = true;
-    loadingOverlay.hidden = true;
+    completeLoading();
     setTranscriptionDisabled(true);
     wakeButton.disabled = false;
     return;
@@ -182,7 +308,7 @@ function renderEngineStatus(status) {
 
   if (status.status === "failed") {
     initialEngineReady = true;
-    loadingOverlay.hidden = true;
+    failLoading(status.last_error || "Falha no motor de transcricao");
     setTranscriptionDisabled(true);
     machineStatus.textContent = status.last_error || "Falha no motor de transcricao";
     wakeButton.hidden = false;
@@ -201,8 +327,7 @@ async function loadEngineStatus() {
 
 async function warmupEngine(showOverlay = true) {
   if (showOverlay) {
-    loadingOverlay.hidden = false;
-    loadingMessage.textContent = "Carregando tudo de uma vez...";
+    startLoadingMotion("Carregando tudo de uma vez...");
     setTranscriptionDisabled(true);
   }
   await fetch("/api/engine/warmup", { method: "POST" });
@@ -323,6 +448,7 @@ function renderTranscript() {
   const query = searchBox.value.trim();
   resultTitle.textContent = currentJob.filename;
   resultMeta.textContent = `${currentJob.status} - idioma: ${currentJob.detected_language || currentJob.settings.language || "pendente"} - ${currentJob.segments.length} trechos`;
+  updateSrtButton();
 
   if (currentJob.error) {
     transcriptEl.innerHTML = `<p class="empty">${escapeHtml(currentJob.error)}</p>`;
@@ -349,6 +475,27 @@ function renderTranscript() {
     });
   }
   syncActiveSegment();
+}
+
+function updateSrtButton() {
+  const canExport = currentJob && currentJob.status === "done" && currentJob.segments.length > 0;
+  srtButton.hidden = !canExport;
+  srtButton.disabled = !canExport;
+  if (canExport) {
+    srtButton.textContent = currentJob.settings.task === "translate" ? "Exportar SRT traduzido" : "Exportar SRT";
+  }
+}
+
+function filenameFromDisposition(header, fallback) {
+  if (!header) return fallback;
+  const utf8Match = header.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match) return decodeURIComponent(utf8Match[1]);
+  const asciiMatch = header.match(/filename="?([^";]+)"?/i);
+  return asciiMatch ? asciiMatch[1] : fallback;
+}
+
+function fallbackSrtName(job) {
+  return `${(job.filename || "legenda").replace(/\.[^/.]+$/, "") || "legenda"}.srt`;
 }
 
 async function loadSilenceTasks() {
@@ -549,6 +696,31 @@ copyButton.addEventListener("click", async () => {
   }, 1200);
 });
 
+srtButton.addEventListener("click", async () => {
+  if (!currentJob || srtButton.disabled) return;
+  const originalText = srtButton.textContent;
+  srtButton.disabled = true;
+  srtButton.textContent = "Gerando...";
+  try {
+    const res = await fetch(`/api/jobs/${currentJob.id}/export/srt`);
+    if (!res.ok) throw new Error(await res.text());
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filenameFromDisposition(res.headers.get("Content-Disposition"), fallbackSrtName(currentJob));
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    alert(`Falha ao exportar SRT: ${error.message}`);
+  } finally {
+    srtButton.textContent = originalText;
+    updateSrtButton();
+  }
+});
+
 clearSelectedTranscription.addEventListener("click", () => {
   transcriptionFiles.length = 0;
   renderTranscriptionSelected();
@@ -633,7 +805,7 @@ loadHealth().catch(() => {
   machineStatus.textContent = "Nao foi possivel ler o status da maquina.";
 });
 warmupEngine(true).catch(() => {
-  loadingMessage.textContent = "Nao foi possivel preparar o motor.";
+  failLoading("Nao foi possivel preparar o motor.");
 });
 loadJobs();
 loadSilenceTasks();

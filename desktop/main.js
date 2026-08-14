@@ -98,13 +98,17 @@ async function startBackend() {
 }
 
 function createWindow() {
+  const brandAssetUrl = encodeURI(
+    `file:///${path.join(__dirname, "..", "web", "assets", "editory-brand.png").replace(/\\/g, "/")}`
+  );
+
   mainWindow = new BrowserWindow({
     width: 1240,
     height: 860,
     minWidth: 980,
     minHeight: 680,
-    backgroundColor: "#070b12",
-    title: "App Transcript",
+    backgroundColor: "#000000",
+    title: "Editory",
     show: false,
     autoHideMenuBar: true,
     webPreferences: {
@@ -128,40 +132,72 @@ function createWindow() {
               body {
                 margin: 0;
                 height: 100vh;
+                overflow: hidden;
                 display: grid;
                 place-items: center;
-                background: radial-gradient(circle at 50% 20%, rgba(47,128,255,.24), transparent 34%), #070b12;
-                color: #e8edf7;
-                font-family: Segoe UI, Arial, sans-serif;
+                background:
+                  radial-gradient(46vmax 46vmax at -8% -10%, rgba(75,19,159,.55), transparent 65%),
+                  radial-gradient(42vmax 42vmax at 108% 112%, rgba(118,14,165,.42), transparent 65%),
+                  radial-gradient(120% 80% at 50% 40%, #050526 0%, #010131 42%, #030318 72%, #000000 100%);
+                color: #ffffff;
+                font-family: Inter, "Segoe UI", Arial, sans-serif;
               }
-              .box {
-                width: min(440px, calc(100vw - 40px));
-                border: 1px solid #253047;
-                border-radius: 8px;
-                background: #111827;
-                padding: 28px;
+              .stack {
+                width: min(620px, calc(100vw - 48px));
+                display: grid;
+                justify-items: center;
+                gap: 24px;
                 text-align: center;
-                box-shadow: 0 24px 80px rgba(0,0,0,.45);
+                animation: enter .8s cubic-bezier(.2,.7,.2,1) both;
               }
-              .spin {
-                width: 42px;
-                height: 42px;
-                margin: 0 auto 18px;
-                border: 4px solid #20304a;
-                border-top-color: #2f80ff;
-                border-radius: 50%;
-                animation: spin .9s linear infinite;
+              .brand {
+                width: min(560px, 86vw);
+                height: auto;
+                filter: drop-shadow(0 28px 62px rgba(0,0,0,.34)) drop-shadow(0 0 32px rgba(118,14,165,.2));
+              }
+              p {
+                margin: 0;
+                color: rgba(255,255,255,.62);
+                letter-spacing: .08em;
+                font-size: 14px;
+                font-weight: 700;
+              }
+              .bar {
+                width: min(360px, 82vw);
+                height: 5px;
+                border-radius: 999px;
+                overflow: hidden;
+                background: rgba(255,255,255,.06);
+              }
+              .bar span {
+                display: block;
+                width: 64%;
+                height: 100%;
+                border-radius: inherit;
+                background: linear-gradient(90deg, #4b139f, #760ea5);
+                box-shadow: 0 0 12px rgba(118,14,165,.55), inset 0 0 6px rgba(255,255,255,.25);
+                animation: load 2.6s ease-in-out infinite;
               }
               @keyframes spin { to { transform: rotate(360deg); } }
-              h1 { margin: 0 0 8px; font-size: 24px; }
-              p { margin: 0; color: #8f9bb3; }
+              @keyframes load {
+                0% { width: 18%; }
+                55% { width: 78%; }
+                100% { width: 92%; }
+              }
+              @keyframes enter {
+                from { opacity: 0; transform: translateY(14px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @media (prefers-reduced-motion: reduce) {
+                *, *:before { animation: none !important; }
+              }
             </style>
           </head>
           <body>
-            <div class="box">
-              <div class="spin"></div>
-              <h1>Preparando motor de transcricao</h1>
-              <p>Carregando tudo de uma vez para evitar travar por video.</p>
+            <div class="stack">
+              <img class="brand" src="${brandAssetUrl}" alt="Editory" />
+              <p>Ligando os motores...</p>
+              <div class="bar" aria-hidden="true"><span></span></div>
             </div>
           </body>
         </html>
@@ -182,7 +218,7 @@ app.whenReady().then(async () => {
   if (!ready) {
     await dialog.showMessageBox({
       type: "error",
-      title: "App Transcript",
+      title: "Editory",
       message: "Nao foi possivel iniciar o backend local.",
       detail: "Rode scripts/install.ps1 e tente abrir o app novamente.",
     });
