@@ -27,7 +27,7 @@ STATIC = ROOT / "web"
 for folder in (UPLOADS, JOBS, SILENCE):
     folder.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Editory", version="0.3.0-alpha")
+app = FastAPI(title="Editory", version="0.3.1-alpha")
 jobs: dict[str, Job] = {}
 silence_tasks: dict[str, SilenceTask] = {}
 lock = asyncio.Lock()
@@ -301,6 +301,9 @@ async def retry_job(job_id: str, background_tasks: BackgroundTasks) -> Job:
         raise HTTPException(status_code=409, detail="Este job ja esta em andamento.")
 
     media_path = retry_source(job_id)
+    for generated in (job_dir(job_id) / "audio.mp3", job_dir(job_id) / "transcription.wav"):
+        if generated.exists() and generated.resolve() != media_path.resolve():
+            generated.unlink(missing_ok=True)
     job.status = JobStatus.queued
     job.progress = 0.0
     job.message = "Na fila"

@@ -2,7 +2,7 @@
 
 Aplicativo local e gratuito para transcrever videos e audios usando CPU/GPU da maquina.
 
-Versao atual: `0.3.0-alpha`.
+Versao atual: `0.3.1-alpha`.
 
 ## Recursos
 
@@ -170,6 +170,6 @@ Fluxo sugerido:
 
 ```powershell
 git add .
-git commit -m "chore: catalog App Transcript v0.3.0-alpha"
-git tag v0.3.0-alpha
+git commit -m "fix: speed up MP3 preparation v0.3.1-alpha"
+git tag v0.3.1-alpha
 ```

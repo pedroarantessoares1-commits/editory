@@ -65,25 +65,23 @@ def extract_audio(input_path: Path, output_path: Path) -> None:
         raise RuntimeError(result.stderr.strip() or "Falha ao converter audio com FFmpeg.")
 
 
+def run_command(cmd: list[str], failure_message: str) -> None:
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        details = result.stderr.strip().splitlines()
+        summary = details[-1] if details else failure_message
+        raise RuntimeError(summary)
+
+
 def run_ffmpeg(input_path: Path, output_path: Path, extra_args: list[str]) -> None:
     if shutil.which("ffmpeg") is None:
         raise RuntimeError("FFmpeg nao encontrado no PATH.")
 
     cmd = ["ffmpeg", "-y", "-i", str(input_path), *extra_args, str(output_path)]
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        details = result.stderr.strip().splitlines()
-        summary = details[-1] if details else "Falha ao processar audio com FFmpeg."
-        raise RuntimeError(summary)
+    run_command(cmd, "Falha ao processar audio com FFmpeg.")
 
 
 def convert_to_mp3(input_path: Path, output_path: Path, light_cleanup: bool) -> None:
-    filters = ["loudnorm=I=-16:TP=-1.5:LRA=11"]
-    if light_cleanup:
-        filters.insert(0, "highpass=f=80")
-        filters.insert(1, "lowpass=f=8500")
-        filters.insert(2, "afftdn=nf=-25")
-
     run_ffmpeg(
         input_path,
         output_path,
@@ -97,12 +95,12 @@ def convert_to_mp3(input_path: Path, output_path: Path, light_cleanup: bool) -> 
             "2",
             "-ar",
             "44100",
-            "-af",
-            ",".join(filters),
             "-codec:a",
             "libmp3lame",
-            "-b:a",
-            "192k",
+            "-q:a",
+            "5",
+            "-compression_level",
+            "0",
         ],
     )
 
@@ -185,7 +183,7 @@ def prepare_audio(job: Job, media_path: Path, work_dir: Path, update: Callable[[
     check_cancel(job)
     job.status = "preparing"
     job.progress = 0.05
-    job.message = "Convertendo para MP3"
+    job.message = "Preparando audio"
     update(job)
 
     prepared_source = media_path
@@ -208,11 +206,14 @@ def prepare_audio(job: Job, media_path: Path, work_dir: Path, update: Callable[[
         prepared_source = run_deep_filter(prepared_source, work_dir)
 
     check_cancel(job)
-    wav_path = work_dir / "transcription.wav"
-    create_transcription_wav(prepared_source, wav_path)
-
-    check_cancel(job)
-    if not final_mp3.exists():
+    job.progress = 0.14
+    job.message = "Convertendo para MP3 rapido"
+    update(job)
+    if prepared_source.resolve() == final_mp3.resolve():
+        pass
+    elif prepared_source.suffix.lower() == ".mp3":
+        shutil.copy2(prepared_source, final_mp3)
+    elif not final_mp3.exists():
         convert_to_mp3(prepared_source, final_mp3, job.settings.light_cleanup)
 
     if (
@@ -227,7 +228,7 @@ def prepare_audio(job: Job, media_path: Path, work_dir: Path, update: Callable[[
     job.progress = 0.18
     job.message = "Audio pronto para transcricao"
     update(job)
-    return wav_path
+    return final_mp3
 
 
 def transcribe(job: Job, media_path: Path, work_dir: Path, update: Callable[[Job], None]) -> Job:
@@ -289,7 +290,8 @@ def transcribe(job: Job, media_path: Path, work_dir: Path, update: Callable[[Job
             reset=reset_segments,
         )
     except CancelledJob:
-        audio_path.unlink(missing_ok=True)
+        if audio_path.name != job.audio_filename:
+            audio_path.unlink(missing_ok=True)
         raise
 
     job.duration = getattr(info, "duration", None)
@@ -301,5 +303,6 @@ def transcribe(job: Job, media_path: Path, work_dir: Path, update: Callable[[Job
     job.segments = collected
     job.text = " ".join(s.text for s in collected).strip()
     update(job)
-    audio_path.unlink(missing_ok=True)
+    if audio_path.name != job.audio_filename:
+        audio_path.unlink(missing_ok=True)
     return job

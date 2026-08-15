@@ -4,6 +4,24 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.3.1-alpha] - 2026-08-15
+
+### Corrigido
+
+- Preparacao de audio deixou de gerar um WAV gigante por padrao antes da transcricao.
+- Conversao para MP3 agora usa encoder rapido e evita filtros pesados no arquivo do player.
+- Retry remove MP3/WAV parciais de tentativas travadas antes de reprocessar.
+
+### Alterado
+
+- O MP3 final passa a ser a fonte da transcricao, mantendo o video descartavel apos a conversao.
+- Mensagem de preparo agora indica conversao rapida para MP3.
+
+### Observacoes
+
+- Benchmark no arquivo real `ProstaLiv_-_Apresentacao_Oficial.mp4`: preparo completo caiu para aproximadamente 44,56s.
+- O processo antigo fazia etapas duplicadas e podia aparentar travamento em videos longos.
+
 ## [0.3.0-alpha] - 2026-08-14
 
 ### Adicionado
