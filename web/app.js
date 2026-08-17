@@ -7,6 +7,7 @@ const clearSelectedTranscription = document.querySelector("#clearSelectedTranscr
 const clearTranscriptionTasks = document.querySelector("#clearTranscriptionTasks");
 const jobsEl = document.querySelector("#jobs");
 const transcriptionHistoryEl = document.querySelector("#transcriptionHistory");
+const historySearch = document.querySelector("#historySearch");
 
 const silenceForm = document.querySelector("#silenceForm");
 const silenceFileInput = document.querySelector("#silenceFileInput");
@@ -44,6 +45,11 @@ const currentTime = document.querySelector("#currentTime");
 const durationTime = document.querySelector("#durationTime");
 const volumeBar = document.querySelector("#volumeBar");
 const playerTitle = document.querySelector("#playerTitle");
+const homeView = document.querySelector("#homeView");
+const transcriptView = document.querySelector("#transcriptView");
+const backToHome = document.querySelector("#backToHome");
+const toast = document.querySelector("#toast");
+const searchCount = document.querySelector("#searchCount");
 
 let selectedJobId = null;
 let selectedSilenceId = null;
@@ -58,6 +64,7 @@ let loadingTimer = null;
 let loadingShownAt = 0;
 let loadingCompletionTimer = null;
 let loadingCompleted = false;
+let transcriptionHistory = [];
 
 const loadingMessagesByProgress = [
   { min: 0, message: "Ligando os motores..." },
@@ -113,6 +120,131 @@ function highlight(text, query) {
   if (!query) return safe;
   const needle = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return safe.replace(new RegExp(needle, "gi"), (match) => `<mark>${match}</mark>`);
+}
+
+function countMatches(text, query) {
+  if (!query) return 0;
+  const needle = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return (String(text).match(new RegExp(needle, "gi")) || []).length;
+}
+
+function formatDateTime(value) {
+  if (!value) return "Data indisponivel";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Data indisponivel";
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+}
+
+function statusLabel(status) {
+  return {
+    queued: "Na fila",
+    preparing: "Preparando",
+    processing: "Processando",
+    done: "Concluido",
+    failed: "Erro",
+    cancelled: "Cancelado",
+  }[status] || status || "Pendente";
+}
+
+function languageLabel(job) {
+  const language = job.detected_language || job.settings?.language || "";
+  return {
+    pt: "Portugues",
+    en: "Ingles",
+    es: "Espanhol",
+    fr: "Frances",
+  }[language] || (language ? language.toUpperCase() : "Auto");
+}
+
+function mediaIcon(filename = "") {
+  return /\.(mp4|mov|mkv|webm|avi)$/i.test(filename) ? "VID" : "AUD";
+}
+
+function cleanSegmentText(text = "") {
+  return String(text).replace(/\s+/g, " ").trim();
+}
+
+function shouldBreakParagraph(previous, current, sentenceCount, currentLength) {
+  if (!previous || !current) return false;
+  const gap = Math.max(0, Number(current.start || 0) - Number(previous.end || 0));
+  const ended = /[.!?]["')\]]?$/.test(cleanSegmentText(previous.text));
+  if (gap >= 2.4 && ended) return true;
+  if (sentenceCount >= 3 && ended) return true;
+  return currentLength >= 520 && ended;
+}
+
+function buildReadableBlocks(job) {
+  const segments = Array.isArray(job?.segments) ? job.segments : [];
+  if (!segments.length) {
+    const fallback = cleanSegmentText(job?.text || "");
+    return fallback ? [{ text: fallback, start: 0, end: 0 }] : [];
+  }
+
+  const blocks = [];
+  let current = "";
+  let blockStart = Number(segments[0].start || 0);
+  let blockEnd = Number(segments[0].end || 0);
+  let sentenceCount = 0;
+  let previous = null;
+
+  for (const segment of segments) {
+    const text = cleanSegmentText(segment.text);
+    if (!text) continue;
+
+    if (shouldBreakParagraph(previous, segment, sentenceCount, current.length)) {
+      blocks.push({ text: current.trim(), start: blockStart, end: blockEnd });
+      current = "";
+      blockStart = Number(segment.start || 0);
+      sentenceCount = 0;
+    }
+
+    current = current ? `${current} ${text}` : text;
+    blockEnd = Number(segment.end || blockEnd || 0);
+    sentenceCount += (text.match(/[.!?]+["')\]]?$/g) || []).length;
+    previous = segment;
+  }
+
+  if (current.trim()) blocks.push({ text: current.trim(), start: blockStart, end: blockEnd });
+  return blocks;
+}
+
+function buildCleanTranscript(job) {
+  return buildReadableBlocks(job).map((block) => block.text).join("\n\n").trim();
+}
+
+function showToast(message) {
+  if (!toast) return;
+  toast.textContent = message;
+  toast.hidden = false;
+  toast.classList.add("visible");
+  window.setTimeout(() => {
+    toast.classList.remove("visible");
+    window.setTimeout(() => {
+      toast.hidden = true;
+    }, 220);
+  }, 1400);
+}
+
+function showTranscriptView() {
+  homeView.hidden = true;
+  homeView.classList.remove("active");
+  transcriptView.hidden = false;
+  transcriptView.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showHomeView() {
+  transcriptView.hidden = true;
+  transcriptView.classList.remove("active");
+  homeView.hidden = false;
+  homeView.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function activeStatuses() {
@@ -283,7 +415,9 @@ function renderEngineStatus(status) {
   engineStatus = status;
   const device = status.device ? status.device.toUpperCase() : "aguardando";
   const model = status.model_size || "large-v3";
-  machineStatus.textContent = `${status.message} - ${model} - ${device}`;
+  const readyLabel = status.status === "ready" ? `${device} ativo` : status.message;
+  machineStatus.textContent = `${readyLabel} - ${model}`;
+  machineStatus.title = `${status.message} - ${model} - ${device}`;
   wakeButton.hidden = status.status !== "standby";
 
   const loading = status.status === "loading";
@@ -345,12 +479,15 @@ function buildCard(item, selectedId, actions) {
   const canCancel = activeStatuses().includes(item.status);
   const canRetry = item.status === "failed" || item.status === "cancelled";
   const removedSeconds = item.removed_seconds != null ? shortClock(item.removed_seconds) : "";
-  const extra = item.removed_percent != null ? ` | removido: ${removedSeconds} (${item.removed_percent}%)` : "";
+  const extra = item.removed_percent != null ? ` / removido: ${removedSeconds} (${item.removed_percent}%)` : "";
   const button = document.createElement("button");
   button.className = `job ${item.status} ${item.id === selectedId ? "selected" : ""}`;
   button.innerHTML = `
-    <strong>${escapeHtml(item.filename)}</strong>
-    <span>${escapeHtml(item.message)} - ${percent}%${extra}</span>
+    <div class="jobTop">
+      <strong>${escapeHtml(item.filename)}</strong>
+      <em>${statusLabel(item.status)}</em>
+    </div>
+    <span>${escapeHtml(item.message)} / ${percent}%${extra}</span>
     <div class="bar"><i style="width:${percent}%"></i></div>
     <div class="jobActions">
       ${canCancel ? '<b data-action="cancel">Cancelar</b>' : ""}
@@ -382,18 +519,15 @@ async function loadJobs() {
   ]);
   const tasks = await tasksRes.json();
   const history = await historyRes.json();
-  renderTaskList(jobsEl, tasks, selectedJobId, {
-    empty: "Nenhuma tarefa de transcricao.",
+  transcriptionHistory = history;
+  const activeTasks = tasks.filter((job) => job.status !== "done");
+  renderTaskList(jobsEl, activeTasks, selectedJobId, {
+    empty: "Nenhuma tarefa ativa.",
     open: selectJob,
     cancel: cancelJob,
     retry: retryJob,
   });
-  renderTaskList(transcriptionHistoryEl, history, selectedJobId, {
-    empty: "Historico vazio.",
-    open: selectJob,
-    cancel: cancelJob,
-    retry: retryJob,
-  });
+  renderHistory();
 
   if (tasks.some((job) => activeStatuses().includes(job.status))) {
     window.setTimeout(loadJobs, 1800);
@@ -411,7 +545,47 @@ function renderTaskList(element, items, selectedId, actions) {
   }
 }
 
-async function selectJob(jobId) {
+function renderHistory() {
+  const query = (historySearch?.value || "").trim().toLowerCase();
+  const items = transcriptionHistory.filter((job) => {
+    if (!query) return true;
+    return [
+      job.filename,
+      statusLabel(job.status),
+      languageLabel(job),
+      formatDateTime(job.created_at),
+    ].join(" ").toLowerCase().includes(query);
+  });
+
+  transcriptionHistoryEl.innerHTML = "";
+  if (!items.length) {
+    transcriptionHistoryEl.innerHTML = `<p class="empty">${query ? "Nenhum item encontrado." : "Historico vazio."}</p>`;
+    return;
+  }
+
+  for (const job of items) {
+    transcriptionHistoryEl.appendChild(buildHistoryCard(job));
+  }
+}
+
+function buildHistoryCard(job) {
+  const button = document.createElement("button");
+  button.className = `historyCard ${job.id === selectedJobId ? "selected" : ""}`;
+  button.type = "button";
+  button.innerHTML = `
+    <span class="historyIcon">${mediaIcon(job.filename)}</span>
+    <span class="historyBody">
+      <strong>${escapeHtml(job.filename)}</strong>
+      <small>${escapeHtml(formatDateTime(job.created_at))}</small>
+    </span>
+    <span class="statusBadge ${job.status}">${statusLabel(job.status)}</span>
+    <span class="historyMeta">${languageLabel(job)}${job.duration ? ` / ${shortClock(job.duration)}` : ""}</span>
+  `;
+  button.addEventListener("click", () => selectJob(job.id, { openViewer: true }));
+  return button;
+}
+
+async function selectJob(jobId, options = {}) {
   selectedJobId = jobId;
   currentPlayerMode = "transcription";
   const res = await fetch(`/api/jobs/${jobId}`);
@@ -425,6 +599,7 @@ async function selectJob(jobId) {
 
   renderTranscript();
   await loadJobs();
+  if (options.openViewer) showTranscriptView();
 }
 
 async function retryJob(jobId) {
@@ -447,30 +622,35 @@ function renderTranscript() {
   if (!currentJob) return;
   const query = searchBox.value.trim();
   resultTitle.textContent = currentJob.filename;
-  resultMeta.textContent = `${currentJob.status} - idioma: ${currentJob.detected_language || currentJob.settings.language || "pendente"} - ${currentJob.segments.length} trechos`;
+  const created = formatDateTime(currentJob.created_at);
+  const duration = currentJob.duration ? ` - ${shortClock(currentJob.duration)}` : "";
+  resultMeta.textContent = `${created} - ${statusLabel(currentJob.status)} - idioma: ${languageLabel(currentJob)} - ${currentJob.segments.length} trechos${duration}`;
   updateSrtButton();
 
   if (currentJob.error) {
     transcriptEl.innerHTML = `<p class="empty">${escapeHtml(currentJob.error)}</p>`;
+    if (searchCount) searchCount.textContent = "";
     return;
   }
 
   if (!currentJob.segments.length) {
     transcriptEl.innerHTML = '<p class="empty">Aguardando os primeiros trechos...</p>';
+    if (searchCount) searchCount.textContent = "";
     return;
   }
 
-  transcriptEl.innerHTML = currentJob.segments.map((seg) => `
-    <article class="segment" data-start="${seg.start}" data-end="${seg.end}">
-      <div class="time">${clock(seg.start)} - ${clock(seg.end)}</div>
-      <div>${highlight(seg.text, query)}</div>
-    </article>
+  const blocks = buildReadableBlocks(currentJob);
+  const matches = countMatches(blocks.map((block) => block.text).join(" "), query);
+  if (searchCount) searchCount.textContent = query ? `${matches} resultado(s)` : "";
+
+  transcriptEl.innerHTML = blocks.map((block) => `
+    <p class="copyParagraph" data-start="${block.start}" data-end="${block.end}">${highlight(block.text, query)}</p>
   `).join("");
 
-  for (const segment of transcriptEl.querySelectorAll(".segment")) {
-    segment.addEventListener("click", () => {
+  for (const paragraph of transcriptEl.querySelectorAll(".copyParagraph")) {
+    paragraph.addEventListener("click", () => {
       currentPlayerMode = "transcription";
-      audioPlayer.currentTime = Number(segment.dataset.start || 0);
+      audioPlayer.currentTime = Number(paragraph.dataset.start || 0);
       audioPlayer.play();
     });
   }
@@ -686,13 +866,18 @@ wakeButton.addEventListener("click", () => {
 });
 
 searchBox.addEventListener("input", renderTranscript);
+historySearch.addEventListener("input", renderHistory);
+backToHome.addEventListener("click", showHomeView);
 
 copyButton.addEventListener("click", async () => {
-  if (!currentJob || !currentJob.text) return;
-  await navigator.clipboard.writeText(currentJob.text);
+  if (!currentJob) return;
+  const cleanText = buildCleanTranscript(currentJob);
+  if (!cleanText) return;
+  await navigator.clipboard.writeText(cleanText);
   copyButton.textContent = "Copiado";
+  showToast("Texto copiado");
   window.setTimeout(() => {
-    copyButton.textContent = "Copiar tudo";
+    copyButton.textContent = "Copiar texto";
   }, 1200);
 });
 
@@ -782,7 +967,7 @@ audioPlayer.addEventListener("timeupdate", () => {
 function syncActiveSegment() {
   const now = audioPlayer.currentTime || 0;
   let active = null;
-  for (const segment of transcriptEl.querySelectorAll(".segment")) {
+  for (const segment of transcriptEl.querySelectorAll(".segment, .copyParagraph")) {
     const start = Number(segment.dataset.start || 0);
     const end = Number(segment.dataset.end || 0);
     const isActive = now >= start && now <= end;

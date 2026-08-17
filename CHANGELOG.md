@@ -4,6 +4,29 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.4.0-alpha] - 2026-08-17
+
+### Adicionado
+
+- Nova interface Editory para o modulo de transcricao, com header compacto, navegacao segmentada, paineis responsivos e cards de historico.
+- Visualizacao interna dedicada para leitura da transcricao como documento/copy, aberta a partir do historico.
+- Busca movida para a visualizacao da copy, com destaque de ocorrencias e contagem de resultados.
+- Feedback visual discreto ao copiar texto.
+
+### Alterado
+
+- Historico de transcricoes saiu da coluna lateral e passou a ficar abaixo da area principal de processamento.
+- Tarefas ativas agora ficam separadas do historico concluido na tela de transcricao.
+- Botao de copiar passa a gerar texto natural a partir dos segmentos, sem timestamps, IDs ou metadados.
+- Responsividade geral revisada para evitar overflow horizontal em janelas menores.
+- Janela desktop passa a permitir largura minima menor para acomodar o novo layout responsivo.
+
+### Observacoes
+
+- O motor de transcricao, modelo Whisper, CUDA, FFmpeg, pipeline local e geracao de SRT nao foram alterados.
+- A exportacao SRT continua usando os timestamps reais dos segmentos persistidos.
+- O modulo Remover Silencio recebeu apenas tratamento visual global, sem mudanca de logica interna.
+
 ## [0.3.1-alpha] - 2026-08-15
 
 ### Corrigido

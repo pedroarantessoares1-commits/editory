@@ -2,7 +2,7 @@
 
 Aplicativo local e gratuito para transcrever videos e audios usando CPU/GPU da maquina.
 
-Versao atual: `0.3.1-alpha`.
+Versao atual: `0.4.0-alpha`.
 
 ## Recursos
 
@@ -20,8 +20,9 @@ Versao atual: `0.3.1-alpha`.
 - Historico local em `data/jobs`.
 - Player de audio sincronizado com os trechos.
 - Clique em um trecho para pular o audio para aquele ponto.
-- Botao "Copiar tudo".
+- Botao "Copiar texto" com formatacao limpa para colar em documentos.
 - Exportacao SRT com timestamps reais para DaVinci Resolve e outros editores.
+- Historico abaixo da area principal e visualizacao de transcricao em tela interna de leitura.
 - Splash/loading do Editory com identidade visual, progresso, mensagens rotativas e fade final.
 - Carregamento inicial do modelo para evitar carregar a cada video.
 - Fallback automatico para CPU se CUDA/cuBLAS/cuDNN estiver incompleto.

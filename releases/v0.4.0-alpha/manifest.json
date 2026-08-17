@@ -1,0 +1,42 @@
+{
+  "app": "Editory",
+  "version": "0.4.0-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-17",
+  "git_tag": "v0.4.0-alpha",
+  "status": "transcription-ui-redesign",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "audio_prepare": "fast-mp3-first"
+  },
+  "changes": [
+    "Redesigned the transcription module with Editory visual identity and responsive layout.",
+    "Moved transcription history below the processing area and separated active tasks from completed history.",
+    "Added an internal transcript reader view opened from history cards.",
+    "Copy action now exports clean readable transcript text without timestamps or metadata.",
+    "Search now lives inside the transcript reader and highlights matches.",
+    "Reduced the Electron minimum window width for the responsive desktop layout."
+  ],
+  "checks": {
+    "python_compile": "passed",
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "http_index": "passed",
+    "http_styles": "passed",
+    "http_history": "passed",
+    "release_check": "passed",
+    "manual_responsive_visual": "pending",
+    "manual_full_transcription": "passed_existing_real_audio_reprocessed",
+    "manual_clipboard_copy": "pending",
+    "srt_export_existing_job": "passed",
+    "srt_export_reprocessed_job": "passed"
+  },
+  "known_risks": [
+    "The UI was validated with static checks and local HTTP routes, but not with a real browser screenshot tool in this environment.",
+    "The copy formatting is a presentation-layer heuristic and does not alter stored segments or SRT timestamps.",
+    "The silence remover logic was intentionally not changed."
+  ]
+}
