@@ -42,7 +42,9 @@ jobs:
         shell: bash
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
-          if [ "$PACKAGE_VERSION" != "${{ inputs.version }}" ]; then
+          REQUESTED_VERSION="${{ inputs.version }}"
+          REQUESTED_VERSION="${REQUESTED_VERSION#v}"
+          if [ "$PACKAGE_VERSION" != "$REQUESTED_VERSION" ]; then
             echo "package.json version ($PACKAGE_VERSION) does not match workflow input (${{ inputs.version }})." >&2
             exit 1
           fi
@@ -50,7 +52,7 @@ jobs:
             echo "Release notes file not found: ${{ inputs.notes_file }}" >&2
             exit 1
           fi
-          echo "tag=v${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          echo "tag=v$REQUESTED_VERSION" >> "$GITHUB_OUTPUT"
       - run: npm run check:web
       - run: npm run check:desktop
 
