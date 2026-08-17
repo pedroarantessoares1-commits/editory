@@ -52,6 +52,17 @@ const toast = document.querySelector("#toast");
 const searchCount = document.querySelector("#searchCount");
 const readerThemeDark = document.querySelector("#readerThemeDark");
 const readerThemeLight = document.querySelector("#readerThemeLight");
+const updateIndicator = document.querySelector("#updateIndicator");
+const updateModal = document.querySelector("#updateModal");
+const updateLatestVersion = document.querySelector("#updateLatestVersion");
+const updateCurrentVersion = document.querySelector("#updateCurrentVersion");
+const updateNotes = document.querySelector("#updateNotes");
+const updateProgress = document.querySelector("#updateProgress");
+const updateProgressLabel = document.querySelector("#updateProgressLabel");
+const updateProgressFill = document.querySelector("#updateProgressFill");
+const updatePrimaryButton = document.querySelector("#updatePrimaryButton");
+const updateLaterButton = document.querySelector("#updateLaterButton");
+const manualCheckUpdates = document.querySelector("#manualCheckUpdates");
 
 let selectedJobId = null;
 let selectedSilenceId = null;
@@ -68,6 +79,7 @@ let loadingCompletionTimer = null;
 let loadingCompleted = false;
 let transcriptionHistory = [];
 let readerTheme = localStorage.getItem("editory.readerTheme") || "dark";
+let updateState = null;
 
 const loadingMessagesByProgress = [
   { min: 0, message: "Ligando os motores..." },
@@ -248,6 +260,102 @@ function showHomeView() {
   homeView.hidden = false;
   homeView.classList.add("active");
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateApi() {
+  return window.editory?.updates || null;
+}
+
+function renderUpdateState(state) {
+  updateState = state || updateState;
+  if (!updateState || !updateIndicator) return;
+
+  const hasUpdate = ["available", "download-progress", "downloaded"].includes(updateState.status);
+  updateIndicator.hidden = !hasUpdate;
+  updateIndicator.title = updateState.latestVersion
+    ? `Versao ${updateState.latestVersion} disponivel`
+    : "Nova versao disponivel";
+
+  if (updateLatestVersion) updateLatestVersion.textContent = updateState.latestVersion || "--";
+  if (updateCurrentVersion) updateCurrentVersion.textContent = updateState.currentVersion || "--";
+  if (updateNotes) updateNotes.textContent = updateState.releaseNotes || "Notas da versao indisponiveis.";
+
+  const downloading = updateState.status === "download-progress";
+  const downloaded = updateState.status === "downloaded";
+  if (updateProgress) updateProgress.hidden = !downloading && !downloaded;
+  if (updateProgressLabel) {
+    updateProgressLabel.textContent = downloaded
+      ? "Atualizacao pronta."
+      : `Baixando atualizacao... ${updateState.percent || 0}%`;
+  }
+  if (updateProgressFill) updateProgressFill.style.width = `${updateState.percent || 0}%`;
+
+  if (updatePrimaryButton) {
+    updatePrimaryButton.disabled = downloading || updateState.status === "checking";
+    if (downloaded) {
+      updatePrimaryButton.textContent = "Reiniciar e atualizar";
+    } else if (updateState.platform === "darwin" || updateState.updateMode === "manual-mac-alpha") {
+      updatePrimaryButton.textContent = "Baixar atualizacao";
+    } else {
+      updatePrimaryButton.textContent = "Atualizar agora";
+    }
+  }
+
+  if (updateState.status === "error" && updateModal && !updateModal.hidden) {
+    showToast(updateState.error || "Nao foi possivel verificar atualizacoes agora.");
+  }
+}
+
+async function initUpdates() {
+  const api = updateApi();
+  if (!api) return;
+  api.onStatus(renderUpdateState);
+  try {
+    renderUpdateState(await api.getState());
+  } catch {
+    // Updater never blocks the main app.
+  }
+}
+
+function openUpdateModal() {
+  if (!updateModal) return;
+  renderUpdateState(updateState);
+  updateModal.hidden = false;
+}
+
+function closeUpdateModal() {
+  if (updateModal) updateModal.hidden = true;
+}
+
+async function checkUpdatesManually() {
+  const api = updateApi();
+  if (!api) return showToast("Atualizacoes indisponiveis neste ambiente.");
+  try {
+    const state = await api.check();
+    renderUpdateState(state);
+    if (state.status === "not-available") showToast("Voce ja esta na versao mais recente.");
+    if (state.status === "disabled") showToast("Updates ainda nao foram configurados.");
+  } catch {
+    showToast("Nao foi possivel verificar atualizacoes agora.");
+  }
+}
+
+async function startUpdateFlow() {
+  const api = updateApi();
+  if (!api || !updateState) return;
+  try {
+    if (updateState.status === "downloaded") {
+      await api.install();
+      return;
+    }
+    if (updateState.platform === "darwin" || updateState.updateMode === "manual-mac-alpha") {
+      await api.openRelease();
+      return;
+    }
+    await api.download();
+  } catch {
+    showToast("Nao foi possivel iniciar a atualizacao.");
+  }
 }
 
 function setReaderTheme(theme) {
@@ -888,6 +996,15 @@ historySearch.addEventListener("input", renderHistory);
 backToHome.addEventListener("click", showHomeView);
 if (readerThemeDark) readerThemeDark.addEventListener("click", () => setReaderTheme("dark"));
 if (readerThemeLight) readerThemeLight.addEventListener("click", () => setReaderTheme("light"));
+if (updateIndicator) updateIndicator.addEventListener("click", openUpdateModal);
+if (updateLaterButton) updateLaterButton.addEventListener("click", closeUpdateModal);
+if (manualCheckUpdates) manualCheckUpdates.addEventListener("click", checkUpdatesManually);
+if (updatePrimaryButton) updatePrimaryButton.addEventListener("click", startUpdateFlow);
+if (updateModal) {
+  updateModal.addEventListener("click", (event) => {
+    if (event.target === updateModal) closeUpdateModal();
+  });
+}
 
 copyButton.addEventListener("click", async () => {
   if (!currentJob) return;
@@ -1006,6 +1123,7 @@ setupDrop(silenceDropZone, silenceFileInput, silenceFiles, renderSilenceSelected
 renderTranscriptionSelected();
 renderSilenceSelected();
 setReaderTheme(readerTheme);
+initUpdates();
 setTranscriptionDisabled(true);
 loadHealth().catch(() => {
   machineStatus.textContent = "Nao foi possivel ler o status da maquina.";

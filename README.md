@@ -2,7 +2,7 @@
 
 Aplicativo local e gratuito para transcrever videos e audios usando CPU/GPU da maquina.
 
-Versao atual: `0.4.1-alpha`.
+Versao atual: `0.5.0-alpha`.
 
 ## Recursos
 
@@ -52,6 +52,34 @@ npm run app
 ```
 
 O Electron abre uma janela propria e inicia o backend local automaticamente. Ao fechar a janela, o backend iniciado pelo app tambem e encerrado.
+
+Alias para desenvolvimento:
+
+```powershell
+npm run dev
+```
+
+## Builds oficiais
+
+Build local Windows x64:
+
+```powershell
+npm run build:win
+```
+
+Build local macOS Apple Silicon, em runner/maquina macOS arm64:
+
+```bash
+npm run build:mac
+```
+
+Esses comandos nao publicam release. Publicacao oficial acontece apenas pelo workflow manual do GitHub.
+
+Detalhes de distribuicao, releases, updates e assinatura futura ficam em:
+
+```text
+docs/distribution.md
+```
 
 ## Executavel e atalho
 
@@ -167,10 +195,12 @@ Checklist antes de catalogar uma versao:
 npm run release:check
 ```
 
-Fluxo sugerido:
+Fluxo local sugerido:
 
 ```powershell
 git add .
-git commit -m "fix: speed up MP3 preparation v0.3.1-alpha"
-git tag v0.3.1-alpha
+git commit -m "feat: prepare distribution v0.5.0-alpha"
+git tag v0.5.0-alpha
 ```
+
+Publicacao oficial nao acontece por commit ou push. Use o workflow manual `Release` no GitHub quando decidir publicar uma versao para usuarios.

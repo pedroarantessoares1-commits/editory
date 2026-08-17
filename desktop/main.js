@@ -1,6 +1,7 @@
 const { app, BrowserWindow, dialog } = require("electron");
 const { spawn } = require("node:child_process");
 const path = require("node:path");
+const { createUpdater } = require("./updater");
 
 const PORT = 8765;
 const HOST = "127.0.0.1";
@@ -12,14 +13,19 @@ const WARMUP_URL = `http://${HOST}:${PORT}/api/engine/warmup`;
 let backend = null;
 let mainWindow = null;
 let ownsBackend = false;
+let updater = null;
+
+function appRoot() {
+  return app.isPackaged ? process.resourcesPath : path.join(__dirname, "..");
+}
 
 function pythonExecutable() {
   const exe = process.platform === "win32" ? "python.exe" : "python";
-  return path.join(__dirname, "..", ".venv", process.platform === "win32" ? "Scripts" : "bin", exe);
+  return path.join(appRoot(), ".venv", process.platform === "win32" ? "Scripts" : "bin", exe);
 }
 
 function cudaPathPrefix() {
-  const root = path.join(__dirname, "..");
+  const root = appRoot();
   const venvPackages = path.join(root, ".venv", "Lib", "site-packages");
   const programFiles = process.env.ProgramFiles || "C:\\Program Files";
   const cudaRoot = path.join(programFiles, "NVIDIA GPU Computing Toolkit", "CUDA");
@@ -79,7 +85,7 @@ async function startBackend() {
     python,
     ["-m", "uvicorn", "app.main:app", "--host", HOST, "--port", String(PORT)],
     {
-      cwd: path.join(__dirname, ".."),
+      cwd: appRoot(),
       windowsHide: true,
       stdio: "ignore",
       env: {
@@ -99,7 +105,7 @@ async function startBackend() {
 
 function createWindow() {
   const brandAssetUrl = encodeURI(
-    `file:///${path.join(__dirname, "..", "web", "assets", "editory-brand.png").replace(/\\/g, "/")}`
+    `file:///${path.join(appRoot(), "web", "assets", "editory-brand.png").replace(/\\/g, "/")}`
   );
 
   mainWindow = new BrowserWindow({
@@ -114,6 +120,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
 
@@ -227,7 +234,13 @@ app.whenReady().then(async () => {
   }
 
   await waitForEngine();
-  if (mainWindow) mainWindow.loadURL(APP_URL);
+  if (mainWindow) {
+    mainWindow.loadURL(APP_URL);
+    updater = createUpdater(mainWindow);
+    setTimeout(() => {
+      updater.checkForUpdates({ manual: false });
+    }, 8000);
+  }
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

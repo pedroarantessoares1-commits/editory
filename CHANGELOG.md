@@ -4,6 +4,34 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.0-alpha] - 2026-08-17
+
+### Adicionado
+
+- Infraestrutura inicial de distribuicao com Electron Builder.
+- Configuracao de build Windows x64 com instalador NSIS.
+- Configuracao de build macOS arm64 com DMG/ZIP para Apple Silicon.
+- Workflow manual de GitHub Release via `workflow_dispatch`, sem publicacao automatica por push ou commit.
+- Preload seguro com API restrita para updates.
+- Servico de updates no processo Main com `electron-updater`, `autoDownload=false` e comparacao SemVer.
+- Indicador discreto de nova atualizacao e modal de update na interface.
+- Fluxo Windows para baixar update somente apos consentimento e instalar somente apos confirmacao.
+- Fluxo macOS Alpha seguro, abrindo o DMG/release manualmente enquanto nao houver assinatura Apple.
+- Documentacao tecnica em `docs/distribution.md`.
+
+### Alterado
+
+- Caminhos do Electron agora diferenciam desenvolvimento e app empacotado para carregar recursos em `process.resourcesPath`.
+- `.gitignore` reforcado para builds, caches, logs, certificados, credenciais e artefatos gerados.
+- `README.md` atualizado com comandos de desenvolvimento/build e referencia de distribuicao.
+
+### Observacoes
+
+- Motor de transcricao, modelos de IA, CUDA, FFmpeg e processamento local nao foram alterados.
+- Repositorio GitHub remoto ainda precisa ser criado/conectado; nao havia remoto configurado no projeto.
+- Updates via GitHub Releases privados nao usam token no app por seguranca. Para update automatico real, use releases publicos ou feed seguro dedicado.
+- Assinatura Apple, notarizacao e code signing Windows ficaram preparados/documentados, mas nao configurados por falta de certificados.
+
 ## [0.4.1-alpha] - 2026-08-17
 
 ### Adicionado

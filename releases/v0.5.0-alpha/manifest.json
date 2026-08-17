@@ -1,0 +1,47 @@
+{
+  "app": "Editory",
+  "version": "0.5.0-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-17",
+  "git_tag": "v0.5.0-alpha",
+  "status": "distribution-and-update-infrastructure",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "audio_prepare": "fast-mp3-first",
+    "builder": "electron-builder",
+    "updater": "electron-updater"
+  },
+  "changes": [
+    "Added Electron Builder configuration for Windows x64 NSIS and macOS arm64 DMG/ZIP.",
+    "Added manual GitHub Actions release workflow.",
+    "Added secure preload IPC for update actions.",
+    "Added update service with SemVer comparison and autoDownload disabled.",
+    "Added UI indicator and modal for available updates.",
+    "Added Windows consent-based download/install flow.",
+    "Added macOS Alpha manual download/install fallback.",
+    "Updated gitignore and distribution documentation."
+  ],
+  "checks": {
+    "npm_install_updater_builder": "passed",
+    "package_lock_sync": "passed",
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "python_compile": "passed",
+    "release_check": "passed",
+    "build_dir_local": "passed_win_unpacked_generated",
+    "build_win_local": "timed_out_nsis_incomplete",
+    "build_mac_arm64": "requires_macos_runner",
+    "github_repo_create": "pending_manual_or_gh_auth",
+    "manual_update_end_to_end": "requires_published_github_release"
+  },
+  "known_risks": [
+    "Private GitHub Releases require authentication; the app intentionally does not embed GitHub tokens.",
+    "The Python runtime must be prepared before official builds so .venv can be bundled as an extra resource.",
+    "Local NSIS installer generation timed out while packing the large Python runtime; the unpacked Windows app was generated.",
+    "macOS automatic replacement is intentionally disabled until Developer ID signing and notarization exist.",
+    "Windows and macOS signing are not configured because no certificates were provided."
+  ]
+}

@@ -17,7 +17,7 @@
       <div class="editory-stage">
         <div class="editory-stack">
           <h1 class="sr-only">EDITORY - O territorio de quem vive da edicao.</h1>
-          <img class="editory-brand-lockup" src="/assets/editory-brand.png?v=0.4.1-alpha" alt="Editory. O territorio de quem vive da edicao." />
+          <img class="editory-brand-lockup" src="/assets/editory-brand.png?v=0.5.0-alpha" alt="Editory. O territorio de quem vive da edicao." />
 
           <div class="editory-loading-block">
             <div class="editory-loader-wrap" aria-hidden="true">
@@ -58,7 +58,7 @@
       <footer class="editory-footer">
         <span>(C) 2026 EDITORY</span>
         <span class="editory-footer__sep">/</span>
-        <span>V0.4.1 ALPHA</span>
+        <span>V0.5.0 ALPHA</span>
       </footer>
     </section>
 
@@ -66,13 +66,17 @@
       <section id="homeView" class="appView active">
         <header class="appHeader">
           <div class="brandBlock">
-            <img class="brandMark" src="/assets/editory-brand.png?v=0.4.1-alpha" alt="Editory" />
+            <img class="brandMark" src="/assets/editory-brand.png?v=0.5.0-alpha" alt="Editory" />
             <div class="brandText">
               <span>Modulo</span>
               <h1>Transcricao</h1>
             </div>
           </div>
           <div class="headerTools">
+            <button id="updateIndicator" class="updateIndicator" type="button" hidden title="Nova versao disponivel">
+              <span></span>
+              Nova atualizacao
+            </button>
             <span class="privacyPill">Local / CPU-GPU / Privado</span>
             <div class="engineCard">
               <div class="status" id="machineStatus">Verificando maquina...</div>
@@ -291,7 +295,7 @@
         <header class="readerTopbar">
           <button id="backToHome" class="ghostButton" type="button">Voltar</button>
           <div class="readerIdentity">
-            <img src="/assets/editory-brand.png?v=0.4.1-alpha" alt="Editory" />
+            <img src="/assets/editory-brand.png?v=0.5.0-alpha" alt="Editory" />
             <span>Transcricao</span>
           </div>
           <div class="readerActions">
@@ -338,6 +342,30 @@
     </main>
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <div id="updateModal" class="modalBackdrop" hidden>
+      <section class="updateModal" role="dialog" aria-modal="true" aria-labelledby="updateModalTitle">
+        <div class="modalHeader">
+          <div>
+            <p class="eyebrow">Release</p>
+            <h2 id="updateModalTitle">Nova atualizacao disponivel</h2>
+          </div>
+          <button id="updateLaterButton" class="ghostButton" type="button">Depois</button>
+        </div>
+        <div class="updateVersions">
+          <span>Disponivel: <strong id="updateLatestVersion">--</strong></span>
+          <span>Instalada: <strong id="updateCurrentVersion">--</strong></span>
+        </div>
+        <div class="updateNotes" id="updateNotes">Notas da versao indisponiveis.</div>
+        <div class="updateProgress" id="updateProgress" hidden>
+          <span id="updateProgressLabel">Baixando atualizacao...</span>
+          <div class="bar"><i id="updateProgressFill" style="width:0%"></i></div>
+        </div>
+        <div class="modalActions">
+          <button id="manualCheckUpdates" class="copy" type="button">Verificar de novo</button>
+          <button id="updatePrimaryButton" class="primary compactPrimary" type="button">Atualizar agora</button>
+        </div>
+      </section>
+    </div>
     <script src="/app.js"></script>
   </body>
 </html>

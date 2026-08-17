@@ -1,0 +1,9 @@
+{
+  "provider": "github",
+  "owner": "",
+  "repo": "",
+  "channel": "alpha",
+  "allowPrerelease": true,
+  "manualMacUpdatesUntilSigned": true,
+  "releaseUrl": ""
+}
