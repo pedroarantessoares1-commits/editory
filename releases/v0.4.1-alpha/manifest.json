@@ -1,0 +1,34 @@
+{
+  "app": "Editory",
+  "version": "0.4.1-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-17",
+  "git_tag": "v0.4.1-alpha",
+  "status": "transcript-reader-theme-toggle",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "audio_prepare": "fast-mp3-first"
+  },
+  "changes": [
+    "Added a dark/light theme toggle to the transcript reader.",
+    "Made the transcript reader dark by default while keeping white background available.",
+    "Stored the reader theme preference in localStorage.",
+    "Reviewed startup splash path without changing its logic."
+  ],
+  "checks": {
+    "python_compile": "passed",
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "release_check": "passed",
+    "http_index_theme_controls": "passed",
+    "api_health": "passed_cuda_true",
+    "manual_reader_theme": "pending"
+  },
+  "known_risks": [
+    "Theme switching is visual only and does not affect transcription data, SRT export, or clipboard text.",
+    "Manual visual validation is still recommended in the desktop app."
+  ]
+}

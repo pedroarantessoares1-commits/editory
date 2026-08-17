@@ -4,6 +4,22 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.4.1-alpha] - 2026-08-17
+
+### Adicionado
+
+- Alternancia de tema claro/escuro na visualizacao da copy.
+- Preferencia do tema da copy salva localmente no navegador.
+
+### Alterado
+
+- Visualizacao da copy passa a abrir em tema escuro por padrao, mantendo o fundo branco como opcao.
+
+### Observacoes
+
+- Ajuste limitado a interface de leitura da transcricao; motor, CUDA, FFmpeg, SRT e processamento local nao foram alterados.
+- Tela de iniciamento/splash do Editory foi revisada e mantida no fluxo atual.
+
 ## [0.4.0-alpha] - 2026-08-17
 
 ### Adicionado

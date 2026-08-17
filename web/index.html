@@ -17,7 +17,7 @@
       <div class="editory-stage">
         <div class="editory-stack">
           <h1 class="sr-only">EDITORY - O territorio de quem vive da edicao.</h1>
-          <img class="editory-brand-lockup" src="/assets/editory-brand.png?v=0.4.0-alpha" alt="Editory. O territorio de quem vive da edicao." />
+          <img class="editory-brand-lockup" src="/assets/editory-brand.png?v=0.4.1-alpha" alt="Editory. O territorio de quem vive da edicao." />
 
           <div class="editory-loading-block">
             <div class="editory-loader-wrap" aria-hidden="true">
@@ -58,7 +58,7 @@
       <footer class="editory-footer">
         <span>(C) 2026 EDITORY</span>
         <span class="editory-footer__sep">/</span>
-        <span>V0.4.0 ALPHA</span>
+        <span>V0.4.1 ALPHA</span>
       </footer>
     </section>
 
@@ -66,7 +66,7 @@
       <section id="homeView" class="appView active">
         <header class="appHeader">
           <div class="brandBlock">
-            <img class="brandMark" src="/assets/editory-brand.png?v=0.4.0-alpha" alt="Editory" />
+            <img class="brandMark" src="/assets/editory-brand.png?v=0.4.1-alpha" alt="Editory" />
             <div class="brandText">
               <span>Modulo</span>
               <h1>Transcricao</h1>
@@ -291,10 +291,14 @@
         <header class="readerTopbar">
           <button id="backToHome" class="ghostButton" type="button">Voltar</button>
           <div class="readerIdentity">
-            <img src="/assets/editory-brand.png?v=0.4.0-alpha" alt="Editory" />
+            <img src="/assets/editory-brand.png?v=0.4.1-alpha" alt="Editory" />
             <span>Transcricao</span>
           </div>
           <div class="readerActions">
+            <div class="readerThemeToggle" aria-label="Tema da copy">
+              <button id="readerThemeDark" class="themeButton active" type="button" aria-pressed="true">Escuro</button>
+              <button id="readerThemeLight" class="themeButton" type="button" aria-pressed="false">Branco</button>
+            </div>
             <button id="srtButton" class="copy" type="button" hidden disabled>Exportar SRT</button>
             <button id="copyButton" class="primary compactPrimary" type="button">Copiar texto</button>
           </div>

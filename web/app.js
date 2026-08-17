@@ -50,6 +50,8 @@ const transcriptView = document.querySelector("#transcriptView");
 const backToHome = document.querySelector("#backToHome");
 const toast = document.querySelector("#toast");
 const searchCount = document.querySelector("#searchCount");
+const readerThemeDark = document.querySelector("#readerThemeDark");
+const readerThemeLight = document.querySelector("#readerThemeLight");
 
 let selectedJobId = null;
 let selectedSilenceId = null;
@@ -65,6 +67,7 @@ let loadingShownAt = 0;
 let loadingCompletionTimer = null;
 let loadingCompleted = false;
 let transcriptionHistory = [];
+let readerTheme = localStorage.getItem("editory.readerTheme") || "dark";
 
 const loadingMessagesByProgress = [
   { min: 0, message: "Ligando os motores..." },
@@ -245,6 +248,21 @@ function showHomeView() {
   homeView.hidden = false;
   homeView.classList.add("active");
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function setReaderTheme(theme) {
+  readerTheme = theme === "light" ? "light" : "dark";
+  localStorage.setItem("editory.readerTheme", readerTheme);
+  transcriptView.classList.toggle("readerThemeLight", readerTheme === "light");
+  transcriptView.classList.toggle("readerThemeDark", readerTheme === "dark");
+  if (readerThemeDark) {
+    readerThemeDark.classList.toggle("active", readerTheme === "dark");
+    readerThemeDark.setAttribute("aria-pressed", String(readerTheme === "dark"));
+  }
+  if (readerThemeLight) {
+    readerThemeLight.classList.toggle("active", readerTheme === "light");
+    readerThemeLight.setAttribute("aria-pressed", String(readerTheme === "light"));
+  }
 }
 
 function activeStatuses() {
@@ -868,6 +886,8 @@ wakeButton.addEventListener("click", () => {
 searchBox.addEventListener("input", renderTranscript);
 historySearch.addEventListener("input", renderHistory);
 backToHome.addEventListener("click", showHomeView);
+if (readerThemeDark) readerThemeDark.addEventListener("click", () => setReaderTheme("dark"));
+if (readerThemeLight) readerThemeLight.addEventListener("click", () => setReaderTheme("light"));
 
 copyButton.addEventListener("click", async () => {
   if (!currentJob) return;
@@ -985,6 +1005,7 @@ setupDrop(dropZone, fileInput, transcriptionFiles, renderTranscriptionSelected);
 setupDrop(silenceDropZone, silenceFileInput, silenceFiles, renderSilenceSelected);
 renderTranscriptionSelected();
 renderSilenceSelected();
+setReaderTheme(readerTheme);
 setTranscriptionDisabled(true);
 loadHealth().catch(() => {
   machineStatus.textContent = "Nao foi possivel ler o status da maquina.";

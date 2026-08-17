@@ -883,6 +883,35 @@ textarea {
   gap: 8px;
 }
 
+.readerThemeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  max-width: 100%;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.26);
+}
+
+.themeButton {
+  border: 0;
+  border-radius: 999px;
+  min-height: 32px;
+  padding: 7px 11px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.themeButton.active {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--white);
+}
+
 .readerHero {
   margin: 12px auto 14px;
   padding: clamp(16px, 2.4vw, 26px);
@@ -905,10 +934,17 @@ textarea {
   width: min(880px, 100%);
   margin: 0 auto;
   padding: clamp(22px, 5vw, 56px);
-  background: rgba(255, 255, 255, 0.92);
-  color: #080914;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+    rgba(0, 0, 0, 0.28);
+  color: var(--text);
   font-size: clamp(1rem, 1.3vw, 1.12rem);
   line-height: 1.78;
+}
+
+.readerThemeLight .transcriptDocument {
+  background: rgba(255, 255, 255, 0.92);
+  color: #080914;
 }
 
 .copyParagraph {
@@ -918,11 +954,20 @@ textarea {
 
 .copyParagraph:hover,
 .copyParagraph.active {
-  background: rgba(118, 14, 165, 0.08);
+  background: rgba(118, 14, 165, 0.16);
   border-radius: 4px;
 }
 
+.readerThemeLight .copyParagraph:hover,
+.readerThemeLight .copyParagraph.active {
+  background: rgba(118, 14, 165, 0.08);
+}
+
 .transcriptDocument .empty {
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.readerThemeLight .transcriptDocument .empty {
   color: rgba(8, 9, 20, 0.56);
 }
 
