@@ -4,6 +4,17 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.1-alpha] - 2026-08-26
+
+### Corrigido
+
+- Corrigida a abertura pelo launcher/atalho, que podia procurar a `.venv` no caminho errado do Electron portatil.
+- A tela principal agora abre assim que o backend local responde, sem ficar bloqueada aguardando o aquecimento completo do motor de IA.
+
+### Observacoes
+
+- Motor de transcricao, modelo Whisper, CUDA, FFmpeg e processamento local nao foram alterados.
+
 ## [0.5.0-alpha] - 2026-08-17
 
 ### Adicionado

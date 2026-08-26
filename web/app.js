@@ -547,7 +547,7 @@ function renderEngineStatus(status) {
   wakeButton.hidden = status.status !== "standby";
 
   const loading = status.status === "loading";
-  if (!initialEngineReady || loading) {
+  if (loading) {
     startLoadingMotion(status.message || "Carregando modelo...");
   }
 
@@ -561,7 +561,7 @@ function renderEngineStatus(status) {
   if (status.status === "standby") {
     initialEngineReady = true;
     completeLoading();
-    setTranscriptionDisabled(true);
+    setTranscriptionDisabled(false);
     wakeButton.disabled = false;
     return;
   }
@@ -1128,7 +1128,7 @@ setTranscriptionDisabled(true);
 loadHealth().catch(() => {
   machineStatus.textContent = "Nao foi possivel ler o status da maquina.";
 });
-warmupEngine(true).catch(() => {
+loadEngineStatus().catch(() => {
   failLoading("Nao foi possivel preparar o motor.");
 });
 loadJobs();

@@ -1,0 +1,32 @@
+{
+  "app": "Editory",
+  "version": "0.5.1-alpha",
+  "channel": "alpha",
+  "release_date": "2026-08-26",
+  "git_tag": "v0.5.1-alpha",
+  "status": "launcher-startup-fix",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "builder": "electron-builder",
+    "updater": "electron-updater"
+  },
+  "changes": [
+    "Fixed app root detection when launched through the local portable Electron launcher.",
+    "Prevented the launcher from resolving the Python virtual environment inside Electron resources.",
+    "Allowed the main UI to load before the transcription engine warmup finishes."
+  ],
+  "checks": {
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "python_compile": "passed",
+    "release_check": "passed",
+    "launcher_smoke_test": "passed"
+  },
+  "known_risks": [
+    "The transcription model can still take time to warm up before the first job, especially on CPU.",
+    "macOS builds still require GitHub Actions or a Mac runner."
+  ]
+}

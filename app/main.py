@@ -27,7 +27,7 @@ STATIC = ROOT / "web"
 for folder in (UPLOADS, JOBS, SILENCE):
     folder.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Editory", version="0.5.0-alpha")
+app = FastAPI(title="Editory", version="0.5.1-alpha")
 jobs: dict[str, Job] = {}
 silence_tasks: dict[str, SilenceTask] = {}
 lock = asyncio.Lock()

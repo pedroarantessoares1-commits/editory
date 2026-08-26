@@ -1,5 +1,6 @@
 const { app, BrowserWindow, dialog } = require("electron");
 const { spawn } = require("node:child_process");
+const fs = require("node:fs");
 const path = require("node:path");
 const { createUpdater } = require("./updater");
 
@@ -16,6 +17,15 @@ let ownsBackend = false;
 let updater = null;
 
 function appRoot() {
+  for (const arg of process.argv.slice(1)) {
+    const candidate = path.resolve(arg);
+    if (
+      fs.existsSync(path.join(candidate, "package.json")) &&
+      fs.existsSync(path.join(candidate, "app", "main.py"))
+    ) {
+      return candidate;
+    }
+  }
   return app.isPackaged ? process.resourcesPath : path.join(__dirname, "..");
 }
 
@@ -233,9 +243,11 @@ app.whenReady().then(async () => {
     return;
   }
 
-  await waitForEngine();
   if (mainWindow) {
     mainWindow.loadURL(APP_URL);
+    waitForEngine().catch((error) => {
+      console.warn("Aquecimento inicial do motor falhou:", error?.message || error);
+    });
     updater = createUpdater(mainWindow);
     setTimeout(() => {
       updater.checkForUpdates({ manual: false });
