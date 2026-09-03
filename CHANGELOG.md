@@ -4,6 +4,17 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.4-alpha] - 2026-09-03
+
+### Corrigido
+
+- Dependencias NVIDIA/CUDA ficam restritas a Linux no `requirements.txt`, evitando falha de instalacao no runner macOS.
+
+### Observacoes
+
+- Mantem o fluxo da `Release macOS` com pacote limpo, checagem anti-dados locais e armazenamento por usuario no app empacotado.
+- Build macOS ainda segue sem assinatura/notarizacao Apple nesta fase Alpha.
+
 ## [0.5.3-alpha] - 2026-09-03
 
 ### Adicionado

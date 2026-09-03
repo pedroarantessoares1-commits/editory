@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Semantic version to publish, for example 0.5.3-alpha"
+        description: "Semantic version to publish, for example 0.5.4-alpha"
         required: true
         type: string
       title:

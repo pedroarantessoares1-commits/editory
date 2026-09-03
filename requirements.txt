@@ -7,7 +7,7 @@ torchaudio==2.5.1
 silero-vad==6.2.1
 auditok==0.5.2
 soundfile==0.14.0
-nvidia-cublas-cu12
-nvidia-cuda-runtime-cu12
+nvidia-cublas-cu12; platform_system == "Linux"
+nvidia-cuda-runtime-cu12; platform_system == "Linux"
 demucs
 deepfilternet

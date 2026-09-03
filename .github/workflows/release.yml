@@ -19,7 +19,7 @@ on:
       notes_file:
         description: "Release notes file"
         required: true
-        default: "releases/v0.5.3-alpha/release-notes.md"
+        default: "releases/v0.5.4-alpha/release-notes.md"
         type: string
 
 permissions:
