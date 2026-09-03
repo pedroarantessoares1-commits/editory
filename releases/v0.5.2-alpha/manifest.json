@@ -1,0 +1,36 @@
+{
+  "app": "Editory",
+  "version": "0.5.2-alpha",
+  "channel": "alpha",
+  "release_date": "2026-09-03",
+  "git_tag": "v0.5.2-alpha",
+  "status": "macos-share-packager",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "builder": "electron-builder",
+    "updater": "electron-updater"
+  },
+  "changes": [
+    "Added a macOS arm64 packaging script for DMG/ZIP builds.",
+    "Added a share ZIP that bundles release notes, manifest and SHA256 checksums.",
+    "Updated the GitHub Release workflow to use the macOS share packager.",
+    "Configured the app update feed for the public GitHub project."
+  ],
+  "checks": {
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "python_compile": "passed",
+    "release_check": "passed",
+    "update_config_repo": "passed_public_github_repo_verified",
+    "package_macos_script_syntax": "not_run_windows_wsl_unavailable",
+    "build_mac_arm64": "requires_macos_runner"
+  },
+  "known_risks": [
+    "macOS builds still require a Mac or GitHub Actions macOS runner.",
+    "The macOS alpha build remains unsigned and not notarized, so first launch may require manual approval in macOS Gatekeeper.",
+    "The bundled Python runtime can make macOS artifacts large."
+  ]
+}

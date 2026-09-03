@@ -2,7 +2,7 @@
 
 Aplicativo local e gratuito para transcrever videos e audios usando CPU/GPU da maquina.
 
-Versao atual: `0.5.0-alpha`.
+Versao atual: `0.5.2-alpha`.
 
 ## Recursos
 
@@ -72,6 +72,14 @@ Build local macOS Apple Silicon, em runner/maquina macOS arm64:
 ```bash
 npm run build:mac
 ```
+
+Pacote macOS para compartilhar com outra pessoa, em runner/maquina macOS arm64:
+
+```bash
+npm run package:mac
+```
+
+O pacote compartilhavel fica em `dist/Editory-<versao>-macos-arm64-share.zip`.
 
 Esses comandos nao publicam release. Publicacao oficial acontece apenas pelo workflow manual do GitHub.
 

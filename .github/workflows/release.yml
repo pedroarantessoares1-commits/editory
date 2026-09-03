@@ -19,7 +19,7 @@ on:
       notes_file:
         description: "Release notes file"
         required: true
-        default: "releases/v0.5.1-alpha/release-notes.md"
+        default: "releases/v0.5.2-alpha/release-notes.md"
         type: string
 
 permissions:
@@ -98,26 +98,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: npm ci
-      - name: Prepare Python runtime
-        shell: bash
-        run: |
-          python3 -m venv .venv
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/python -m pip install -r requirements.txt
-      - run: npm run check:web
-      - run: npm run check:desktop
-      - run: npm run build:mac
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - run: npm run package:mac
       - uses: actions/upload-artifact@v4
         with:
           name: editory-macos-arm64
           path: |
             dist/*.dmg
             dist/*.zip
+            dist/*macos-arm64-share.zip
             dist/*.blockmap
             dist/latest*.yml
+            dist/SHA256SUMS-macos-arm64.txt
           if-no-files-found: error
 
   publish:

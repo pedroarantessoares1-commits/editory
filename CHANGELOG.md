@@ -4,6 +4,24 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.2-alpha] - 2026-09-03
+
+### Adicionado
+
+- Empacotador macOS em `scripts/package-macos.sh` para gerar DMG/ZIP arm64 e montar um pacote compartilhavel com notas, manifesto e checksums.
+- Comando `npm run package:mac` para uso local em um Mac ou no runner macOS do GitHub Actions.
+
+### Alterado
+
+- Workflow manual de Release passa a usar o empacotador macOS e anexar os checksums do pacote.
+- Documentacao de distribuicao atualizada com um fluxo direto para compartilhar a build macOS com outra pessoa.
+- Configuracao de updates passa a apontar para o repositorio publico `pedroarantessoares1-commits/editory`.
+
+### Observacoes
+
+- Build macOS ainda requer Mac/runner macOS e segue sem assinatura/notarizacao Apple nesta fase Alpha.
+- Motor de transcricao, modelos de IA, CUDA, FFmpeg e processamento local nao foram alterados.
+
 ## [0.5.1-alpha] - 2026-08-26
 
 ### Corrigido

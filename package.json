@@ -1,6 +1,6 @@
 {
   "name": "app-transcript",
-  "version": "0.5.1-alpha",
+  "version": "0.5.2-alpha",
   "private": true,
   "description": "Desktop app local para transcricao de videos e audios.",
   "main": "desktop/main.js",
@@ -10,6 +10,7 @@
     "build": "electron-builder --dir --publish never",
     "build:win": "electron-builder --win nsis --x64 --publish never",
     "build:mac": "electron-builder --mac dmg zip --arm64 --publish never",
+    "package:mac": "bash scripts/package-macos.sh",
     "dist": "electron-builder --publish never",
     "build:launcher": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-launcher.ps1",
     "shortcut": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/create-desktop-shortcut.ps1",

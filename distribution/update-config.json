@@ -1,9 +1,9 @@
 {
   "provider": "github",
-  "owner": "",
-  "repo": "",
+  "owner": "pedroarantessoares1-commits",
+  "repo": "editory",
   "channel": "alpha",
   "allowPrerelease": true,
   "manualMacUpdatesUntilSigned": true,
-  "releaseUrl": ""
+  "releaseUrl": "https://github.com/pedroarantessoares1-commits/editory/releases"
 }

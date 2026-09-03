@@ -33,6 +33,23 @@ npm run build:mac
 
 Gera `.dmg` e `.zip` arm64 em `dist/`. O build atual e para testes Alpha sem assinatura/notarizacao Apple.
 
+## Pacote macOS para compartilhar
+
+Em um Mac Apple Silicon ou no runner macOS do GitHub Actions:
+
+```bash
+npm run package:mac
+```
+
+O comando prepara dependencias, roda checagens basicas, gera DMG/ZIP arm64 e monta:
+
+```text
+dist/Editory-<versao>-macos-arm64-share.zip
+dist/SHA256SUMS-macos-arm64.txt
+```
+
+Use esse pacote quando quiser mandar uma build Alpha para um amigo testar. Como ainda nao ha assinatura/notarizacao Apple, o primeiro launch no macOS pode pedir liberacao manual em Ajustes do Sistema.
+
 ## Releases oficiais
 
 Releases oficiais devem ser publicados apenas pelo workflow manual:
@@ -42,6 +59,7 @@ Releases oficiais devem ser publicados apenas pelo workflow manual:
 3. Commit e tag locais.
 4. No GitHub: Actions -> Release -> Run workflow.
 5. Informe a versao, titulo, prerelease e arquivo de notas.
+6. Baixe o artefato `editory-macos-arm64` ou a Release gerada para compartilhar o pacote macOS.
 
 Commits e pushes nao publicam release.
 
