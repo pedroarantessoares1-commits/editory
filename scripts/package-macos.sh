@@ -44,6 +44,10 @@ python3 -m venv .venv
 .venv/bin/python -m pip install --upgrade pip
 .venv/bin/python -m pip install -r requirements.txt
 
+echo "== Limpando caches do runtime Python =="
+find .venv -type d -name "__pycache__" -prune -exec rm -rf {} +
+find .venv -type f \( -name "*.pyc" -o -name "*.pyo" \) -delete
+
 echo "== Checando arquivos desktop/web =="
 npm run check:web
 npm run check:desktop

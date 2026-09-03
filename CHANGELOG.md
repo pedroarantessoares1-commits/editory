@@ -4,6 +4,17 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.5-alpha] - 2026-09-03
+
+### Corrigido
+
+- Empacotador macOS remove caches Python (`__pycache__`, `.pyc` e `.pyo`) do runtime antes de gerar os artefatos.
+
+### Observacoes
+
+- Mantem a checagem anti-dados locais no workflow `Release macOS`, incluindo bloqueio de caches dentro dos ZIPs finais.
+- Build macOS ainda segue sem assinatura/notarizacao Apple nesta fase Alpha.
+
 ## [0.5.4-alpha] - 2026-09-03
 
 ### Corrigido

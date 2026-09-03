@@ -2,7 +2,7 @@
 
 Aplicativo local e gratuito para transcrever videos e audios usando CPU/GPU da maquina.
 
-Versao atual: `0.5.4-alpha`.
+Versao atual: `0.5.5-alpha`.
 
 ## Recursos
 
