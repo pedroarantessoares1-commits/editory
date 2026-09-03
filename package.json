@@ -1,6 +1,6 @@
 {
   "name": "app-transcript",
-  "version": "0.5.5-alpha",
+  "version": "0.5.6-alpha",
   "private": true,
   "description": "Desktop app local para transcricao de videos e audios.",
   "main": "desktop/main.js",
@@ -33,7 +33,17 @@
     "extraResources": [
       {
         "from": "app",
-        "to": "app"
+        "to": "app",
+        "filter": [
+          "**/*",
+          "!data/**",
+          "!uploads/**",
+          "!jobs/**",
+          "!__pycache__/**",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!**/*.pyo"
+        ]
       },
       {
         "from": "web",
@@ -55,7 +65,10 @@
         "from": ".venv",
         "to": ".venv",
         "filter": [
-          "**/*"
+          "**/*",
+          "!**/__pycache__/**",
+          "!**/*.pyc",
+          "!**/*.pyo"
         ]
       }
     ],

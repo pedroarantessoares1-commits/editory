@@ -4,6 +4,18 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.6-alpha] - 2026-09-03
+
+### Corrigido
+
+- Configuracao do pacote macOS exclui explicitamente `app/data`, uploads, jobs e caches Python dos recursos empacotados.
+- Verificacao da Release macOS passa a bloquear dados locais do app sem confundir pastas `data` internas de dependencias Python.
+
+### Observacoes
+
+- Mantem a publicacao manual pelo workflow `Release macOS`.
+- Build macOS ainda segue sem assinatura/notarizacao Apple nesta fase Alpha.
+
 ## [0.5.5-alpha] - 2026-09-03
 
 ### Corrigido

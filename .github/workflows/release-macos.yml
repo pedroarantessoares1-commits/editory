@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Semantic version to publish, for example 0.5.5-alpha"
+        description: "Semantic version to publish, for example 0.5.6-alpha"
         required: true
         type: string
       title:
@@ -83,11 +83,41 @@ jobs:
       - name: Verify clean macOS package
         shell: bash
         run: |
-          forbidden='(^|/)(data|uploads|jobs|silence|\.env|\.git|\.pytest_cache|\.mypy_cache|\.ruff_cache|__pycache__)(/|$)'
+          forbidden='(^|/)(\.env|\.git|\.pytest_cache|\.mypy_cache|\.ruff_cache|__pycache__)(/|$)|(^|/)[^/]+\.app/Contents/Resources/(app/)?(data|uploads|jobs|silence)(/|$)'
 
-          if find dist -maxdepth 5 \( -name data -o -name uploads -o -name jobs -o -name silence -o -name ".env" \) | grep -q .; then
+          if find dist \( \
+            -name ".env" -o \
+            -name ".git" -o \
+            -name ".pytest_cache" -o \
+            -name ".mypy_cache" -o \
+            -name ".ruff_cache" -o \
+            -name "__pycache__" -o \
+            -path "*/Contents/Resources/app/data" -o \
+            -path "*/Contents/Resources/app/uploads" -o \
+            -path "*/Contents/Resources/app/jobs" -o \
+            -path "*/Contents/Resources/app/silence" -o \
+            -path "*/Contents/Resources/data" -o \
+            -path "*/Contents/Resources/uploads" -o \
+            -path "*/Contents/Resources/jobs" -o \
+            -path "*/Contents/Resources/silence" \
+          \) | grep -q .; then
             echo "Forbidden local data path found in dist/." >&2
-            find dist -maxdepth 5 \( -name data -o -name uploads -o -name jobs -o -name silence -o -name ".env" \)
+            find dist \( \
+              -name ".env" -o \
+              -name ".git" -o \
+              -name ".pytest_cache" -o \
+              -name ".mypy_cache" -o \
+              -name ".ruff_cache" -o \
+              -name "__pycache__" -o \
+              -path "*/Contents/Resources/app/data" -o \
+              -path "*/Contents/Resources/app/uploads" -o \
+              -path "*/Contents/Resources/app/jobs" -o \
+              -path "*/Contents/Resources/app/silence" -o \
+              -path "*/Contents/Resources/data" -o \
+              -path "*/Contents/Resources/uploads" -o \
+              -path "*/Contents/Resources/jobs" -o \
+              -path "*/Contents/Resources/silence" \
+            \)
             exit 1
           fi
 
