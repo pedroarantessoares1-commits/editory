@@ -34,6 +34,10 @@ function pythonExecutable() {
   return path.join(appRoot(), ".venv", process.platform === "win32" ? "Scripts" : "bin", exe);
 }
 
+function dataRoot() {
+  return app.isPackaged ? path.join(app.getPath("userData"), "data") : path.join(appRoot(), "data");
+}
+
 function cudaPathPrefix() {
   const root = appRoot();
   const venvPackages = path.join(root, ".venv", "Lib", "site-packages");
@@ -100,6 +104,7 @@ async function startBackend() {
       stdio: "ignore",
       env: {
         ...process.env,
+        EDITORY_DATA_DIR: dataRoot(),
         PATH: `${cudaPathPrefix()}${path.delimiter}${process.env.PATH || ""}`,
       },
     }

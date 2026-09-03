@@ -4,6 +4,23 @@ Todas as mudancas importantes do App Transcript ficam catalogadas aqui.
 
 Formato usado: Adicionado, Alterado, Corrigido, Removido e Observacoes.
 
+## [0.5.3-alpha] - 2026-09-03
+
+### Adicionado
+
+- Workflow `Release macOS` para publicar uma GitHub Release macOS via execucao manual no GitHub Actions.
+- Checagem de pacote limpo no runner macOS para bloquear `data/`, uploads, jobs, historico, `.env`, caches locais e metadados Git dentro dos ZIPs gerados.
+
+### Alterado
+
+- App empacotado passa a salvar dados novos no espaco local do usuario do Electron, evitando escrita dentro dos recursos do app e garantindo instalacao zerada para outra pessoa.
+- Documentacao de distribuicao registra que o pacote nao inclui dados locais do Pedro.
+
+### Observacoes
+
+- Build macOS ainda segue sem assinatura/notarizacao Apple nesta fase Alpha.
+- Motor de transcricao, modelos de IA, CUDA, FFmpeg e processamento local nao foram alterados.
+
 ## [0.5.2-alpha] - 2026-09-03
 
 ### Adicionado

@@ -50,6 +50,8 @@ dist/SHA256SUMS-macos-arm64.txt
 
 Use esse pacote quando quiser mandar uma build Alpha para um amigo testar. Como ainda nao ha assinatura/notarizacao Apple, o primeiro launch no macOS pode pedir liberacao manual em Ajustes do Sistema.
 
+O app empacotado nao inclui a pasta local `data/`, historico, uploads, jobs, caches locais ou `.env`. No macOS, novos dados do usuario sao criados no espaco local do proprio usuario pelo Electron.
+
 ## Releases oficiais
 
 Releases oficiais devem ser publicados apenas pelo workflow manual:

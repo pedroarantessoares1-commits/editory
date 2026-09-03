@@ -1,0 +1,36 @@
+{
+  "app": "Editory",
+  "version": "0.5.3-alpha",
+  "channel": "alpha",
+  "release_date": "2026-09-03",
+  "git_tag": "v0.5.3-alpha",
+  "status": "macos-clean-public-release",
+  "runtime": {
+    "desktop": "Electron",
+    "backend": "FastAPI",
+    "frontend": "HTML/CSS/JavaScript",
+    "transcription_engine": "faster-whisper",
+    "builder": "electron-builder",
+    "updater": "electron-updater"
+  },
+  "changes": [
+    "Added a manual macOS GitHub Release workflow.",
+    "Added package privacy checks for local data, uploads, jobs, env files and caches.",
+    "Moved packaged app data storage to Electron userData so each Mac starts clean."
+  ],
+  "checks": {
+    "npm_check_web": "passed",
+    "npm_check_desktop": "passed",
+    "python_compile": "passed",
+    "release_check": "passed",
+    "json_parse": "passed",
+    "git_diff_check": "passed",
+    "macos_clean_package_check": "requires_macos_runner",
+    "build_mac_arm64": "requires_macos_runner"
+  },
+  "known_risks": [
+    "The macOS alpha build remains unsigned and not notarized, so first launch may require manual approval in macOS Gatekeeper.",
+    "The bundled Python runtime can make macOS artifacts large.",
+    "Release publication depends on GitHub Actions runner availability."
+  ]
+}

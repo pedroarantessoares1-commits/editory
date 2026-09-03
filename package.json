@@ -1,6 +1,6 @@
 {
   "name": "app-transcript",
-  "version": "0.5.2-alpha",
+  "version": "0.5.3-alpha",
   "private": true,
   "description": "Desktop app local para transcricao de videos e audios.",
   "main": "desktop/main.js",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import re
 import uuid
 from pathlib import Path
@@ -18,7 +19,7 @@ from app.transcriber import CancelledJob, has_cuda, transcribe
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "data"
+DATA = Path(os.environ.get("EDITORY_DATA_DIR") or ROOT / "data").expanduser()
 UPLOADS = DATA / "uploads"
 JOBS = DATA / "jobs"
 SILENCE = DATA / "silence"
@@ -27,7 +28,7 @@ STATIC = ROOT / "web"
 for folder in (UPLOADS, JOBS, SILENCE):
     folder.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Editory", version="0.5.2-alpha")
+app = FastAPI(title="Editory", version="0.5.3-alpha")
 jobs: dict[str, Job] = {}
 silence_tasks: dict[str, SilenceTask] = {}
 lock = asyncio.Lock()
